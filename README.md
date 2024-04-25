@@ -9,10 +9,8 @@ Compiling tests passed on ubuntu **16.04, 18.04 and 20.04** with ros installed.
 You can just execute the following commands one by one.
 ```
 sudo apt-get install libarmadillo-dev
-git clone https://github.com/ZJU-FAST-Lab/ego-planner.git
-cd ego-planner
-catkin_make
-source devel/setup.bash
+git clone https://github.com/HuaYuXiao/EGO-Planner.git
+catkin_make install --source src/EGO-Planner --build build/EGO-Planner
 roslaunch ego_planner simple_run.launch
 ```
 If your network to github is slow, We recommend you to try the gitee repository [https://gitee.com/iszhouxin/ego-planner](https://gitee.com/iszhouxin/ego-planner). They synchronize automatically.

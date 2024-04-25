@@ -59,18 +59,13 @@ sudo apt-get install libarmadillo-dev
 
 From github,
 ```
-git clone https://github.com/ZJU-FAST-Lab/ego-planner.git
-```
-
-Or from gitee,
-```
-git clone https://gitee.com/iszhouxin/ego-planner.git
+git clone -b noetic-ZJU https://github.com/HuaYuXiao/EGO-Planner.git
 ```
 
 **Step 3**. Compile,
 ```
 cd ego-planner
-catkin_make -DCMAKE_BUILD_TYPE=Release
+catkin_make install --source src/EGO-Planner --build build/EGO-Planner -DCMAKE_BUILD_TYPE=Release
 ```
 
 **Step 4**. Run.

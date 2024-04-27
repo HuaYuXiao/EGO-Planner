@@ -10,24 +10,21 @@
 #include <std_msgs/Empty.h>
 #include <vector>
 #include <visualization_msgs/Marker.h>
-
-#include <bspline_opt/bspline_optimizer.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <bspline_opt/bspline_optimizer_ego.h>
 #include <plan_env/grid_map.h>
 #include <traj_utils/Bspline.h>
 #include <traj_utils/MultiBsplines.h>
-#include <geometry_msgs/PoseStamped.h>
+#include <traj_utils/planning_visualization_ego.h>
 #include <traj_utils/DataDisp.h>
 #include <plan_manage/planner_manager.h>
-#include <traj_utils/planning_visualization.h>
 
 using std::vector;
 
 namespace ego_planner
 {
-
   class EGOReplanFSM
   {
-
   private:
     /* ---------- flag ---------- */
     //规划器状态

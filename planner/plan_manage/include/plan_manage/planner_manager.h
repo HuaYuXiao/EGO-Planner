@@ -2,19 +2,17 @@
 #define _PLANNER_MANAGER_H_
 
 #include <stdlib.h>
-
-#include <bspline_opt/bspline_optimizer.h>
+#include <ros/ros.h>
+#include <bspline_opt/bspline_optimizer_ego.h>
 #include <bspline_opt/uniform_bspline.h>
-#include <traj_utils/DataDisp.h>
 #include <plan_env/grid_map.h>
 #include <plan_env/obj_predictor.h>
+#include <traj_utils/planning_visualization_ego.h>
 #include <traj_utils/plan_container.hpp>
-#include <ros/ros.h>
-#include <traj_utils/planning_visualization.h>
+#include <traj_utils/DataDisp.h>
 
 namespace ego_planner
 {
-
   // Fast Planner Manager
   // Key algorithms of mapping and planning are called
 
@@ -45,7 +43,6 @@ namespace ego_planner
     double getSwarmClearance(void) { return bspline_optimizer_->getSwarmClearance(); }
 
     bool checkCollision(int drone_id);
-    
 
     PlanParameters pp_;
     LocalTrajData local_data_;

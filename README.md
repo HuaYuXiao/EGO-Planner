@@ -7,12 +7,14 @@ Of course, some topic names are changed from EGO-Planner, check it using `rqt_gr
 # Quick Start within 3 Minutes 
 Compiling tests passed on ubuntu **16.04, 18.04 and 20.04** with ros installed.
 You can just execute the following commands one by one.
-```
+
+```bash
 sudo apt-get install libarmadillo-dev
-git clone https://github.com/HuaYuXiao/EGO-Planner.git
+git clone -b noetic-AMOV https://github.com/HuaYuXiao/EGO-Planner.git
 catkin_make install --source src/EGO-Planner --build build/EGO-Planner
 roslaunch ego_planner simple_run.launch
 ```
+
 If your network to github is slow, We recommend you to try the gitee repository [https://gitee.com/iszhouxin/ego-planner](https://gitee.com/iszhouxin/ego-planner). They synchronize automatically.
 
 If you find this work useful or interesting, please kindly give us a star :star:, thanks!:grinning:
@@ -60,15 +62,10 @@ From github,
 git clone https://github.com/ZJU-FAST-Lab/ego-planner.git
 ```
 
-Or from gitee,
-```
-git clone https://gitee.com/iszhouxin/ego-planner.git
-```
-
 **Step 3**. Compile,
+
 ```
-cd ego-planner
-catkin_make -DCMAKE_BUILD_TYPE=Release
+catkin_make install --source src/EGO-Planner/planner/plan_manage --build build/ego_planner
 ```
 
 **Step 4**. Run.

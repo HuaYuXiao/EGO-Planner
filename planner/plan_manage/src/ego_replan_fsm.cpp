@@ -193,8 +193,7 @@ namespace ego_planner
     planNextWaypoint(end_wp);
   }
 
-  void EGOReplanFSM::odometryCallback(const nav_msgs::OdometryConstPtr &msg)
-  {
+  void EGOReplanFSM::odometryCallback(const nav_msgs::OdometryConstPtr &msg){
     odom_pos_(0) = msg->pose.pose.position.x;
     odom_pos_(1) = msg->pose.pose.position.y;
     odom_pos_(2) = msg->pose.pose.position.z;
@@ -396,22 +395,19 @@ namespace ego_planner
     return std::pair<int, FSM_EXEC_STATE>(continously_called_times_, exec_state_);
   }
 
-  void EGOReplanFSM::printFSMExecState()
-  {
+  void EGOReplanFSM::printFSMExecState(){
     static string state_str[8] = {"INIT", "WAIT_TARGET", "GEN_NEW_TRAJ", "REPLAN_TRAJ", "EXEC_TRAJ", "EMERGENCY_STOP", "SEQUENTIAL_START"};
 
     cout << "planner state: " + state_str[int(exec_state_)] << endl;
   }
 
-  void EGOReplanFSM::execFSMCallback(const ros::TimerEvent &e)
-  {
+  void EGOReplanFSM::execFSMCallback(const ros::TimerEvent &e){
     // 暂停计时
     exec_timer_.stop(); // To avoid blockage (阻塞)
 
     static int fsm_num = 0;
     fsm_num++;
-    if (fsm_num == 1000)
-    {
+    if (fsm_num == 1000){
       printFSMExecState();
       if (!have_odom_)
         cout << "no odom." << endl;
@@ -420,12 +416,9 @@ namespace ego_planner
       fsm_num = 0;
     }
 
-    switch (exec_state_)
-    {
-    case INIT:
-    {
-      if (!have_odom_)
-      {
+    switch (exec_state_){
+    case INIT:{
+      if (!have_odom_){
         goto force_return;
         // return;
       }
@@ -433,13 +426,11 @@ namespace ego_planner
       break;
     }
 
-    case WAIT_TARGET:
-    {
+    case WAIT_TARGET:{
       if (!have_target_ || !have_trigger_)
         goto force_return;
       // return;
-      else
-      {
+      else{
         changeFSMExecState(SEQUENTIAL_START, "FSM");
       }
       break;
@@ -450,25 +441,18 @@ namespace ego_planner
     {
       // swarmTrajsCallback回调后,have_recv_pre_agent_会被设置为true
       // ego默认从0开始，我们默认从1开始，因此这里>2
-      if (planner_manager_->pp_.drone_id <= 1 || (planner_manager_->pp_.drone_id >= 2&& have_recv_pre_agent_))
-      {
-        if (have_odom_ && have_target_ && have_trigger_)
-        {
+      if (planner_manager_->pp_.drone_id <= 1 || (planner_manager_->pp_.drone_id >= 2&& have_recv_pre_agent_)){
+        if (have_odom_ && have_target_ && have_trigger_){
           bool success = planFromGlobalTraj(10); // zx-todo
-          if (success)
-          {
+          if (success){
             changeFSMExecState(EXEC_TRAJ, "FSM");
 
             publishSwarmTrajs(true);
-          }
-          else
-          {
+          }else{
             ROS_ERROR("Failed to generate the first trajectory!!!");
             changeFSMExecState(SEQUENTIAL_START, "FSM");
           }
-        }
-        else
-        {
+        }else{
           ROS_ERROR("No odom or no target! have_odom_=%d, have_target_=%d", have_odom_, have_target_);
         }
       }
@@ -476,45 +460,35 @@ namespace ego_planner
       break;
     }
 
-    case GEN_NEW_TRAJ:
-    {
+    case GEN_NEW_TRAJ:{
 
       // Eigen::Vector3d rot_x = odom_orient_.toRotationMatrix().block(0, 0, 3, 1);
       // start_yaw_(0)         = atan2(rot_x(1), rot_x(0));
       // start_yaw_(1) = start_yaw_(2) = 0.0;
 
       bool success = planFromGlobalTraj(10); // zx-todo
-      if (success)
-      {
+      if (success){
         changeFSMExecState(EXEC_TRAJ, "FSM");
         flag_escape_emergency_ = true;
         publishSwarmTrajs(false);
-      }
-      else
-      {
+      }else{
         changeFSMExecState(GEN_NEW_TRAJ, "FSM");
       }
       break;
     }
 
-    case REPLAN_TRAJ:
-    {
-
-      if (planFromCurrentTraj(1))
-      {
+    case REPLAN_TRAJ:{
+      if (planFromCurrentTraj(1)){
         changeFSMExecState(EXEC_TRAJ, "FSM");
         publishSwarmTrajs(false);
-      }
-      else
-      {
+      }else{
         changeFSMExecState(REPLAN_TRAJ, "FSM");
       }
 
       break;
     }
 
-    case EXEC_TRAJ:
-    {
+    case EXEC_TRAJ:{
       /* determine if need to replan */
       LocalTrajData *info = &planner_manager_->local_data_;
       ros::Time time_now = ros::Time::now();
@@ -527,20 +501,17 @@ namespace ego_planner
       /* && (end_pt_ - pos).norm() < 0.5 */
       if ((target_type_ == TARGET_TYPE::PRESET_TARGET) &&
           (wp_id_ < waypoint_num_ - 1) &&
-          (end_pt_ - pos).norm() < no_replan_thresh_)
-      {
+          (end_pt_ - pos).norm() < no_replan_thresh_){
         wp_id_++;
         planNextWaypoint(wps_[wp_id_]);
       }
       else if ((local_target_pt_ - end_pt_).norm() < 1e-3) // end_pt_是目标点，
       {
-        if (t_cur > info->duration_ - 1e-2)
-        {
+        if (t_cur > info->duration_ - 1e-2){
           have_target_ = false;
           have_trigger_ = false;
 
-          if (target_type_ == TARGET_TYPE::PRESET_TARGET)
-          {
+          if (target_type_ == TARGET_TYPE::PRESET_TARGET){
             wp_id_ = 0;
             planNextWaypoint(wps_[wp_id_]);
           }
@@ -548,29 +519,22 @@ namespace ego_planner
           changeFSMExecState(WAIT_TARGET, "FSM");
           goto force_return;
           // return;
-        }
-        else if ((end_pt_ - pos).norm() > no_replan_thresh_ && t_cur > replan_thresh_)
-        {
+        }else if ((end_pt_ - pos).norm() > no_replan_thresh_ && t_cur > replan_thresh_){
           changeFSMExecState(REPLAN_TRAJ, "FSM");
         }
-      }
-      else if (t_cur > replan_thresh_)
-      {
+      }else if (t_cur > replan_thresh_){
         changeFSMExecState(REPLAN_TRAJ, "FSM");
       }
 
       break;
     }
 
-    case EMERGENCY_STOP:
-    {
+    case EMERGENCY_STOP:{
 
       if (flag_escape_emergency_) // Avoiding repeated calls
       {
         callEmergencyStop(odom_pos_);
-      }
-      else
-      {
+      }else{
         if (enable_fail_safe_ && odom_vel_.norm() < 0.1)
           changeFSMExecState(GEN_NEW_TRAJ, "FSM");
       }
@@ -630,16 +594,13 @@ namespace ego_planner
     {
       success = callReboundReplan(true, false);
       //changeFSMExecState(EXEC_TRAJ, "FSM");
-      if (!success)
-      {
-        for (int i = 0; i < trial_times; i++)
-        {
+      if (!success){
+        for (int i = 0; i < trial_times; i++){
           success = callReboundReplan(true, true);
           if (success)
             break;
         }
-        if (!success)
-        {
+        if (!success){
           return false;
         }
       }
@@ -648,9 +609,7 @@ namespace ego_planner
     return true;
   }
 
-  void EGOReplanFSM::checkCollisionCallback(const ros::TimerEvent &e)
-  {
-
+  void EGOReplanFSM::checkCollisionCallback(const ros::TimerEvent &e){
     LocalTrajData *info = &planner_manager_->local_data_;
     auto map = planner_manager_->grid_map_;
 
@@ -658,20 +617,18 @@ namespace ego_planner
       return;
 
     /* ---------- check lost of depth ---------- */
-    if(map->getOdomDepthTimeout())
-    {
-      ROS_ERROR("Depth Lost! EMERGENCY_STOP");
-      enable_fail_safe_ = false;
-      changeFSMExecState(EMERGENCY_STOP, "SAFETY");
-    }
-    else
-    {
-      if(enable_fail_safe_ == false)
-      {
-        ROS_INFO("Depth Get! GEN_NEW_TRAJ");
-        enable_fail_safe_ = true;
-      }
-    }
+//    if(map->getOdomDepthTimeout()){
+//      ROS_ERROR("Depth Lost! EMERGENCY_STOP");
+//      enable_fail_safe_ = false;
+//      changeFSMExecState(EMERGENCY_STOP, "SAFETY");
+//    }else{
+//      if(enable_fail_safe_ == false){
+//        ROS_INFO("Depth Get! GEN_NEW_TRAJ");
+//        enable_fail_safe_ = true;
+//      }
+//    }
+
+      enable_fail_safe_ = true;
 
     /* ---------- check trajectory ---------- */
     constexpr double time_step = 0.01;

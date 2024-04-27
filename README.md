@@ -4,20 +4,6 @@ It is more robust and safe, and therefore, is more recommended to use.
 If you have only one drone, just set the `drone_id` to `0` in EGO-Swarm's launch files.
 Of course, some topic names are changed from EGO-Planner, check it using `rqt_graph` and `rosnode info <package name>`.
 
-# Quick Start within 3 Minutes 
-Compiling tests passed on ubuntu **16.04, 18.04 and 20.04** with ros installed.
-You can just execute the following commands one by one.
-
-```bash
-sudo apt-get install libarmadillo-dev
-git clone -b noetic-AMOV https://github.com/HuaYuXiao/EGO-Planner.git
-catkin_make install --source src/EGO-Planner --build build/EGO-Planner
-roslaunch ego_planner simple_run.launch
-```
-
-If your network to github is slow, We recommend you to try the gitee repository [https://gitee.com/iszhouxin/ego-planner](https://gitee.com/iszhouxin/ego-planner). They synchronize automatically.
-
-If you find this work useful or interesting, please kindly give us a star :star:, thanks!:grinning:
 
 # Acknowledgements
 - The framework of this repository is based on [Fast-Planner](https://github.com/HKUST-Aerial-Robotics/Fast-Planner) by Zhou Boyu who achieves impressive proformance on quadrotor local planning.
@@ -51,35 +37,29 @@ EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou,
 **Requirements**: ubuntu 16.04, 18.04 or 20.04 with ros-desktop-full installation.
 
 **Step 1**. Install [Armadillo](http://arma.sourceforge.net/), which is required by **uav_simulator**.
-```
+
+```bash
 sudo apt-get install libarmadillo-dev
 ``` 
 
-**Step 2**. Clone the code from github or gitee. This two repositories synchronize automaticly.
+**Step 2**. Clone the code from github.
 
-From github,
-```
-git clone https://github.com/ZJU-FAST-Lab/ego-planner.git
+```bash
+git clone -b noetic-AMOV https://github.com/HuaYuXiao/EGO-Planner.git
 ```
 
 **Step 3**. Compile,
 
-```
+```bash
 catkin_make install --source src/EGO-Planner/planner/plan_manage --build build/ego_planner
 ```
 
 **Step 4**. Run.
 
-In a terminal at the _ego-planner/_ folder, open the rviz for visuallization and interactions
-```
-source devel/setup.bash
-roslaunch ego_planner rviz.launch
-```
+In terminal, run the planner in simulation by
 
-In another terminal at the _ego-planner/_, run the planner in simulation by
-```
-source devel/setup.bash
-roslaunch ego_planner run_in_sim.launch
+```bash
+roslaunch ego_planner uav_simulation.launch
 ```
 
 Then you can follow the gif below to control the drone.

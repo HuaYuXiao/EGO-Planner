@@ -1,9 +1,7 @@
-
 #include <plan_manage/ego_replan_fsm.h>
 
 namespace ego_planner
 {
-
   void EGOReplanFSM::init(ros::NodeHandle &nh)
   {
     current_wp_ = 0;
@@ -18,7 +16,7 @@ namespace ego_planner
     // 重规划时间间隔
     nh.param("fsm/thresh_replan_time", replan_thresh_, -1.0);
     // 与目标距离小于该参数时，停止规划
-    nh.param("fsm/thresh_no_replan_meter", no_replan_thresh_, -1.0);
+    nh.param("fsm/thresh_no_replan_meter", no_replan_thresh_, 0.2);
     // 规划范围
     nh.param("fsm/planning_horizon", planning_horizen_, -1.0);
     // 紧急停止时间
@@ -31,8 +29,7 @@ namespace ego_planner
     have_trigger_ = !flag_realworld_experiment_;
     // 读取waypoint
     nh.param("fsm/waypoint_num", waypoint_num_, -1);
-    for (int i = 0; i < waypoint_num_; i++)
-    {
+    for (int i = 0; i < waypoint_num_; i++){
       nh.param("fsm/waypoint" + to_string(i) + "_x", waypoints_[i][0], -1.0);
       nh.param("fsm/waypoint" + to_string(i) + "_y", waypoints_[i][1], -1.0);
       nh.param("fsm/waypoint" + to_string(i) + "_z", waypoints_[i][2], -1.0);
@@ -53,30 +50,24 @@ namespace ego_planner
     // 安全检查定时器
     safety_timer_ = nh.createTimer(ros::Duration(0.05), &EGOReplanFSM::checkCollisionCallback, this);
     // 订阅里程计
-    odom_sub_ = nh.subscribe("odom_world", 1, &EGOReplanFSM::odometryCallback, this);
+    odom_sub_ = nh.subscribe("/prometheus/drone_odom", 1, &EGOReplanFSM::odometryCallback, this);
     // 订阅其他无人机位置
     // ego默认从0开始，我们默认从1开始，因此这里>2
-    if (planner_manager_->pp_.drone_id >= 2)
-    {
-      string sub_topic_name = string("/uav") + std::to_string(planner_manager_->pp_.drone_id - 1) + string("_planning/swarm_trajs");
-      swarm_trajs_sub_ = nh.subscribe(sub_topic_name.c_str(), 10, &EGOReplanFSM::swarmTrajsCallback, this, ros::TransportHints().tcpNoDelay());
+    if (planner_manager_->pp_.drone_id >= 2){
+              swarm_trajs_sub_ = nh.subscribe("/planning/swarm_trajs", 10, &EGOReplanFSM::swarmTrajsCallback, this, ros::TransportHints().tcpNoDelay());
     }
-    string pub_topic_name = string("/uav") + std::to_string(planner_manager_->pp_.drone_id) + string("_planning/swarm_trajs");
-    swarm_trajs_pub_ = nh.advertise<traj_utils::MultiBsplines>(pub_topic_name.c_str(), 10);
+    swarm_trajs_pub_ = nh.advertise<traj_utils::MultiBsplines>("/planning/swarm_trajs", 10);
 
-    broadcast_bspline_pub_ = nh.advertise<traj_utils::Bspline>("planning/broadcast_bspline_from_planner", 10);
-    broadcast_bspline_sub_ = nh.subscribe("planning/broadcast_bspline_to_planner", 100, &EGOReplanFSM::BroadcastBsplineCallback, this, ros::TransportHints().tcpNoDelay());
+    broadcast_bspline_pub_ = nh.advertise<traj_utils::Bspline>("/planning/broadcast_bspline_from_planner", 10);
+    broadcast_bspline_sub_ = nh.subscribe("/planning/broadcast_bspline_to_planner", 100, &EGOReplanFSM::BroadcastBsplineCallback, this, ros::TransportHints().tcpNoDelay());
 
-    bspline_pub_ = nh.advertise<traj_utils::Bspline>("planning/bspline", 10);
-    data_disp_pub_ = nh.advertise<traj_utils::DataDisp>("planning/data_display", 100);
+    bspline_pub_ = nh.advertise<traj_utils::Bspline>("/planning/bspline", 10);
+    data_disp_pub_ = nh.advertise<traj_utils::DataDisp>("/planning/data_display", 100);
 
-    if (target_type_ == TARGET_TYPE::MANUAL_TARGET)
-    {
-      string waypoint_topic_name = string("/uav") + std::to_string(planner_manager_->pp_.drone_id) + string("/prometheus/ego/goal");
-      waypoint_sub_ = nh.subscribe(waypoint_topic_name.c_str(), 1, &EGOReplanFSM::waypointCallback, this);
+    if (target_type_ == TARGET_TYPE::MANUAL_TARGET){
+      waypoint_sub_ = nh.subscribe("/move_base_simple/goal", 1, &EGOReplanFSM::waypointCallback, this);
     }
-    else if (target_type_ == TARGET_TYPE::PRESET_TARGET)
-    {
+    else if (target_type_ == TARGET_TYPE::PRESET_TARGET){
       trigger_sub_ = nh.subscribe("/traj_start_trigger", 1, &EGOReplanFSM::triggerCallback, this);
 
       ROS_INFO("Wait for 1 second.");
@@ -187,21 +178,13 @@ namespace ego_planner
     if (msg->pose.position.z < -0.1)
       return;
 
-    if(msg->pose.position.x == 99.99 && msg->pose.position.y == 99.99)
-    {
-      callEmergencyStop(odom_pos_);
-      have_target_ = false;
-      exec_state_ = WAIT_TARGET;
-      return;
-    }
-
     callEmergencyStop(odom_pos_);
     sleep(2.0);
 
     cout << "Get goal!" << endl;
     init_pt_ = odom_pos_;
 
-    // 此处定高1米
+    // TODO: 此处定高1米
     Eigen::Vector3d end_wp(msg->pose.position.x, msg->pose.position.y, 1.0);
 
     // 发布目标点用于显示 - [目标点,颜色,大小,id]
@@ -232,7 +215,6 @@ namespace ego_planner
 
   void EGOReplanFSM::BroadcastBsplineCallback(const traj_utils::BsplinePtr &msg)
   {
-    printf("BroadcastBsplineCallback!\n");
     size_t id = msg->drone_id;
     if ((int)id == planner_manager_->pp_.drone_id)
       return;
@@ -303,7 +285,7 @@ namespace ego_planner
     // planner_manager_->swarm_trajs_buf_[id].start_time_ = ros::Time::now(); // Un-reliable time sync
 
     /* Check Collision */
-    printf("Check Collision\n");
+    printf("Check Collision");
     if (planner_manager_->checkCollision(id))
     {
       changeFSMExecState(REPLAN_TRAJ, "TRAJ_CHECK");
@@ -391,7 +373,7 @@ namespace ego_planner
 
     have_recv_pre_agent_ = true;
 
-    printf("have_recv_pre_agent_==true\n");
+    printf("have_recv_pre_agent_==true");
   }
 
   void EGOReplanFSM::changeFSMExecState(FSM_EXEC_STATE new_state, string pos_call)
@@ -418,7 +400,7 @@ namespace ego_planner
   {
     static string state_str[8] = {"INIT", "WAIT_TARGET", "GEN_NEW_TRAJ", "REPLAN_TRAJ", "EXEC_TRAJ", "EMERGENCY_STOP", "SEQUENTIAL_START"};
 
-    cout << "/uav"<< planner_manager_->pp_.drone_id <<" planner state: " + state_str[int(exec_state_)] << endl;
+    cout << "planner state: " + state_str[int(exec_state_)] << endl;
   }
 
   void EGOReplanFSM::execFSMCallback(const ros::TimerEvent &e)

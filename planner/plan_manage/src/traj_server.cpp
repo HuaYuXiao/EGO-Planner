@@ -1,7 +1,8 @@
 #include "bspline_opt/uniform_bspline.h"
 #include "nav_msgs/Odometry.h"
 #include "traj_utils/Bspline.h"
-#include "quadrotor_msgs/PositionCommand.h"
+#include <quadrotor_msgs/PositionCommand.h>
+#include <prometheus_msgs/PositionReference.h>
 #include "std_msgs/Empty.h"
 #include "visualization_msgs/Marker.h"
 #include <ros/ros.h>
@@ -24,20 +25,17 @@ int traj_id_;
 double last_yaw_, last_yaw_dot_;
 double time_forward_;
 
-void bsplineCallback(traj_utils::BsplineConstPtr msg)
-{
+void bsplineCallback(traj_utils::BsplineConstPtr msg){
   // parse pos traj
 
   Eigen::MatrixXd pos_pts(3, msg->pos_pts.size());
 
   Eigen::VectorXd knots(msg->knots.size());
-  for (size_t i = 0; i < msg->knots.size(); ++i)
-  {
+  for (size_t i = 0; i < msg->knots.size(); ++i){
     knots(i) = msg->knots[i];
   }
 
-  for (size_t i = 0; i < msg->pos_pts.size(); ++i)
-  {
+  for (size_t i = 0; i < msg->pos_pts.size(); ++i){
     pos_pts(0, i) = msg->pos_pts[i].x;
     pos_pts(1, i) = msg->pos_pts[i].y;
     pos_pts(2, i) = msg->pos_pts[i].z;
@@ -68,8 +66,7 @@ void bsplineCallback(traj_utils::BsplineConstPtr msg)
   receive_traj_ = true;
 }
 
-std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros::Time &time_now, ros::Time &time_last)
-{
+std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros::Time &time_now, ros::Time &time_last){
   constexpr double PI = 3.1415926;
   constexpr double YAW_DOT_MAX_PER_SEC = PI;
   // constexpr double YAW_DOT_DOT_MAX_PER_SEC = PI;
@@ -80,64 +77,48 @@ std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros:
   Eigen::Vector3d dir = t_cur + time_forward_ <= traj_duration_ ? traj_[0].evaluateDeBoorT(t_cur + time_forward_) - pos : traj_[0].evaluateDeBoorT(traj_duration_) - pos;
   double yaw_temp = dir.norm() > 0.1 ? atan2(dir(1), dir(0)) : last_yaw_;
   double max_yaw_change = YAW_DOT_MAX_PER_SEC * (time_now - time_last).toSec();
-  if (yaw_temp - last_yaw_ > PI)
-  {
-    if (yaw_temp - last_yaw_ - 2 * PI < -max_yaw_change)
-    {
+  if (yaw_temp - last_yaw_ > PI){
+    if (yaw_temp - last_yaw_ - 2 * PI < -max_yaw_change){
       yaw = last_yaw_ - max_yaw_change;
       if (yaw < -PI)
         yaw += 2 * PI;
 
       yawdot = -YAW_DOT_MAX_PER_SEC;
-    }
-    else
-    {
+    }else{
       yaw = yaw_temp;
       if (yaw - last_yaw_ > PI)
         yawdot = -YAW_DOT_MAX_PER_SEC;
       else
         yawdot = (yaw_temp - last_yaw_) / (time_now - time_last).toSec();
     }
-  }
-  else if (yaw_temp - last_yaw_ < -PI)
-  {
-    if (yaw_temp - last_yaw_ + 2 * PI > max_yaw_change)
-    {
+  }else if (yaw_temp - last_yaw_ < -PI){
+    if (yaw_temp - last_yaw_ + 2 * PI > max_yaw_change){
       yaw = last_yaw_ + max_yaw_change;
       if (yaw > PI)
         yaw -= 2 * PI;
 
       yawdot = YAW_DOT_MAX_PER_SEC;
-    }
-    else
-    {
+    }else{
       yaw = yaw_temp;
       if (yaw - last_yaw_ < -PI)
         yawdot = YAW_DOT_MAX_PER_SEC;
       else
         yawdot = (yaw_temp - last_yaw_) / (time_now - time_last).toSec();
     }
-  }
-  else
-  {
-    if (yaw_temp - last_yaw_ < -max_yaw_change)
-    {
+  }else{
+    if (yaw_temp - last_yaw_ < -max_yaw_change){
       yaw = last_yaw_ - max_yaw_change;
       if (yaw < -PI)
         yaw += 2 * PI;
 
       yawdot = -YAW_DOT_MAX_PER_SEC;
-    }
-    else if (yaw_temp - last_yaw_ > max_yaw_change)
-    {
+    }else if (yaw_temp - last_yaw_ > max_yaw_change){
       yaw = last_yaw_ + max_yaw_change;
       if (yaw > PI)
         yaw -= 2 * PI;
 
       yawdot = YAW_DOT_MAX_PER_SEC;
-    }
-    else
-    {
+    }else{
       yaw = yaw_temp;
       if (yaw - last_yaw_ > PI)
         yawdot = -YAW_DOT_MAX_PER_SEC;
@@ -160,8 +141,7 @@ std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros:
   return yaw_yawdot;
 }
 
-void cmdCallback(const ros::TimerEvent &e)
-{
+void cmdCallback(const ros::TimerEvent &e){
   /* no publishing before receive traj_ */
   if (!receive_traj_)
     return;
@@ -173,8 +153,7 @@ void cmdCallback(const ros::TimerEvent &e)
   std::pair<double, double> yaw_yawdot(0, 0);
 
   static ros::Time time_last = ros::Time::now();
-  if (t_cur < traj_duration_ && t_cur >= 0.0)
-  {
+  if (t_cur < traj_duration_ && t_cur >= 0.0){
     pos = traj_[0].evaluateDeBoorT(t_cur);
     vel = traj_[1].evaluateDeBoorT(t_cur);
     acc = traj_[2].evaluateDeBoorT(t_cur);
@@ -185,9 +164,7 @@ void cmdCallback(const ros::TimerEvent &e)
 
     double tf = min(traj_duration_, t_cur + 2.0);
     pos_f = traj_[0].evaluateDeBoorT(tf);
-  }
-  else if (t_cur >= traj_duration_)
-  {
+  }else if (t_cur >= traj_duration_){
     /* hover when finish traj_ */
     pos = traj_[0].evaluateDeBoorT(traj_duration_);
     vel.setZero();
@@ -197,15 +174,13 @@ void cmdCallback(const ros::TimerEvent &e)
     yaw_yawdot.second = 0;
 
     pos_f = pos;
-  }
-  else
-  {
-    cout << "[Traj server]: invalid time." << endl;
+  }else{
+    cout << "[Traj server] invalid time." << endl;
   }
   time_last = time_now;
 
   cmd.header.stamp = time_now;
-  cmd.header.frame_id = "world";
+  cmd.header.frame_id = "map";
   cmd.trajectory_flag = quadrotor_msgs::PositionCommand::TRAJECTORY_STATUS_READY;
   cmd.trajectory_id = traj_id_;
 
@@ -229,15 +204,14 @@ void cmdCallback(const ros::TimerEvent &e)
   pos_cmd_pub.publish(cmd);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv){
   ros::init(argc, argv, "traj_server");
   // ros::NodeHandle node;
   ros::NodeHandle nh("~");
 
-  ros::Subscriber bspline_sub = nh.subscribe("planning/bspline", 10, bsplineCallback);
+  ros::Subscriber bspline_sub = nh.subscribe("/planning/bspline", 10, bsplineCallback);
 
-  pos_cmd_pub = nh.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 50);
+  pos_cmd_pub = nh.advertise<prometheus_msgs::PositionReference>("/prometheus/position_cmd", 50);
 
   ros::Timer cmd_timer = nh.createTimer(ros::Duration(0.01), cmdCallback);
 
@@ -256,7 +230,7 @@ int main(int argc, char **argv)
 
   ros::Duration(1.0).sleep();
 
-  ROS_WARN("[Traj server]: ready.");
+  ROS_WARN("[Traj server] ready.");
 
   ros::spin();
 

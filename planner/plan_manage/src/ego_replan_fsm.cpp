@@ -50,7 +50,7 @@ namespace ego_planner
     // 安全检查定时器
     safety_timer_ = nh.createTimer(ros::Duration(0.05), &EGOReplanFSM::checkCollisionCallback, this);
     // 订阅里程计
-    odom_sub_ = nh.subscribe("/prometheus/drone_odom", 1, &EGOReplanFSM::odometryCallback, this);
+    odom_sub_ = nh.subscribe<nav_msgs::Odometry>("/prometheus/drone_odom", 1, &EGOReplanFSM::odometryCallback, this);
     // 订阅其他无人机位置
     // ego默认从0开始，我们默认从1开始，因此这里>2
     if (planner_manager_->pp_.drone_id >= 2){
@@ -65,37 +65,31 @@ namespace ego_planner
     data_disp_pub_ = nh.advertise<traj_utils::DataDisp>("/planning/data_display", 100);
 
     if (target_type_ == TARGET_TYPE::MANUAL_TARGET){
-      waypoint_sub_ = nh.subscribe("/move_base_simple/goal", 1, &EGOReplanFSM::waypointCallback, this);
-    }
-    else if (target_type_ == TARGET_TYPE::PRESET_TARGET){
+      waypoint_sub_ = nh.subscribe("/prometheus/planning/goal", 1, &EGOReplanFSM::waypointCallback, this);
+    }else if (target_type_ == TARGET_TYPE::PRESET_TARGET){
       trigger_sub_ = nh.subscribe("/traj_start_trigger", 1, &EGOReplanFSM::triggerCallback, this);
 
       ROS_INFO("Wait for 1 second.");
       int count = 0;
-      while (ros::ok() && count++ < 1000)
-      {
+      while (ros::ok() && count++ < 1000){
         ros::spinOnce();
         ros::Duration(0.001).sleep();
       }
 
       ROS_WARN("Waiting for trigger from [n3ctrl] from RC");
 
-      while (ros::ok() && (!have_odom_ || !have_trigger_))
-      {
+      while (ros::ok() && (!have_odom_ || !have_trigger_)){
         ros::spinOnce();
         ros::Duration(0.001).sleep();
       }
 
       readGivenWps();
-    }
-    else
+    }else
       cout << "Wrong target_type_ value! target_type_=" << target_type_ << endl;
   }
 
-  void EGOReplanFSM::readGivenWps()
-  {
-    if (waypoint_num_ <= 0)
-    {
+  void EGOReplanFSM::readGivenWps(){
+    if (waypoint_num_ <= 0){
       ROS_ERROR("Wrong waypoint_num_ = %d", waypoint_num_);
       return;
     }
@@ -120,14 +114,12 @@ namespace ego_planner
     planNextWaypoint(wps_[wp_id_]);
   }
 
-  void EGOReplanFSM::planNextWaypoint(const Eigen::Vector3d next_wp)
-  {
+  void EGOReplanFSM::planNextWaypoint(const Eigen::Vector3d next_wp){
     bool success = false;
     // planGlobalTraj(起始位置\速度\加速度,终点位置\速度\加速度)
     success = planner_manager_->planGlobalTraj(odom_pos_, odom_vel_, Eigen::Vector3d::Zero(), next_wp, Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero());
 
-    if (success)
-    {
+    if (success){
       end_pt_ = next_wp;
 
       constexpr double step_size_t = 0.1;
@@ -159,9 +151,7 @@ namespace ego_planner
 
       // 发布GlobalPath用于显示 "/drone_x_ego_planner_node/global_list" - [GlobalPath,大小,id]
       visualization_->displayGlobalPathList(gloabl_traj, 0.1, 0);
-    }
-    else
-    {
+    }else{
       ROS_ERROR("Unable to generate global trajectory!");
     }
   }
@@ -173,19 +163,21 @@ namespace ego_planner
     init_pt_ = odom_pos_;
   }
 
-  void EGOReplanFSM::waypointCallback(const geometry_msgs::PoseStampedPtr &msg)
-  {
-    if (msg->pose.position.z < -0.1)
-      return;
+  void EGOReplanFSM::waypointCallback(const geometry_msgs::PoseStampedPtr &msg){
+    if (msg->pose.position.z < -0.1){
+        cout << "Too low!" << endl;
+        return;
+    }
 
     callEmergencyStop(odom_pos_);
+
+    // TODO: why sleep?
     sleep(2.0);
 
     cout << "Get goal!" << endl;
     init_pt_ = odom_pos_;
 
-    // TODO: 此处定高1米
-    Eigen::Vector3d end_wp(msg->pose.position.x, msg->pose.position.y, 1.0);
+    Eigen::Vector3d end_wp(msg->pose.position.x, msg->pose.position.y, odom_pos_(2));
 
     // 发布目标点用于显示 - [目标点,颜色,大小,id]
     visualization_->displayGoalPoint(end_wp, Eigen::Vector4d(0, 0.5, 0.5, 1), 0.3, 1);

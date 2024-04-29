@@ -13,16 +13,16 @@ find_package(PCL 1.7 REQUIRED)
 find_package(octomap REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  std_msgs
-  geometry_msgs
-  quadrotor_msgs
   plan_env
   path_searching
   bspline_opt
   traj_utils
-  message_generation
   cv_bridge
   prometheus_msgs
+        std_msgs
+        geometry_msgs
+        quadrotor_msgs
+        message_generation
 )
 
 # catkin_package(CATKIN_DEPENDS message_runtime)

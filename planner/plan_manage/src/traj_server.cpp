@@ -1,15 +1,15 @@
-#include "bspline_opt/uniform_bspline.h"
-#include "nav_msgs/Odometry.h"
-#include "traj_utils/Bspline.h"
+#include <bspline_opt/uniform_bspline.h>
+#include <nav_msgs/Odometry.h>
+#include <traj_utils/Bspline.h>
 #include <quadrotor_msgs/PositionCommand.h>
-#include <prometheus_msgs/PositionReference.h>
-#include "std_msgs/Empty.h"
-#include "visualization_msgs/Marker.h"
+#include <std_msgs/Empty.h>
+#include <visualization_msgs/Marker.h>
 #include <ros/ros.h>
 
 ros::Publisher pos_cmd_pub;
 
 quadrotor_msgs::PositionCommand cmd;
+
 double pos_gain[3] = {0, 0, 0};
 double vel_gain[3] = {0, 0, 0};
 
@@ -211,7 +211,7 @@ int main(int argc, char **argv){
 
   ros::Subscriber bspline_sub = nh.subscribe("/planning/bspline", 10, bsplineCallback);
 
-  pos_cmd_pub = nh.advertise<prometheus_msgs::PositionReference>("/prometheus/position_cmd", 50);
+  pos_cmd_pub = nh.advertise<quadrotor_msgs::PositionCommand>("/prometheus/quadrotor_position_cmd", 50);
 
   ros::Timer cmd_timer = nh.createTimer(ros::Duration(0.01), cmdCallback);
 
@@ -230,7 +230,7 @@ int main(int argc, char **argv){
 
   ros::Duration(1.0).sleep();
 
-  ROS_WARN("[Traj server] ready.");
+  ROS_INFO("[Traj server] ready.");
 
   ros::spin();
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>ego_planner</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <description>
     EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors
   </description>
@@ -55,7 +55,6 @@
   <build_depend>bspline_opt</build_depend>
   <build_depend>traj_utils</build_depend>
   <build_depend>octomap</build_depend>
-
 
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>

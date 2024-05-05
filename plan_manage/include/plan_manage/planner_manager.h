@@ -2,14 +2,13 @@
 #define _PLANNER_MANAGER_H_
 
 #include <stdlib.h>
-
-#include <bspline_opt/bspline_optimizer.h>
+#include <bspline_opt/bspline_optimizer_ego.h>
 #include <bspline_opt/uniform_bspline.h>
 #include <ego_planner/DataDisp.h>
 #include <plan_env/grid_map.h>
 #include <plan_manage/plan_container.hpp>
 #include <ros/ros.h>
-#include <traj_utils/planning_visualization.h>
+#include <traj_utils/planning_visualization_ego.h>
 
 namespace ego_planner
 {

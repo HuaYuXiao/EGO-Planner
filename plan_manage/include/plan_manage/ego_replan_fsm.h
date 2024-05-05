@@ -11,12 +11,12 @@
 #include <vector>
 #include <visualization_msgs/Marker.h>
 
-#include <bspline_opt/bspline_optimizer.h>
+#include <bspline_opt/bspline_optimizer_ego.h>
 #include <plan_env/grid_map.h>
 #include <ego_planner/Bspline.h>
 #include <ego_planner/DataDisp.h>
 #include <plan_manage/planner_manager.h>
-#include <traj_utils/planning_visualization.h>
+#include <traj_utils/planning_visualization_ego.h>
 
 using std::vector;
 

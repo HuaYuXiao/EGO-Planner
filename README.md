@@ -4,21 +4,6 @@ It is more robust and safe, and therefore, is more recommended to use.
 If you have only one drone, just set the `drone_id` to `0` in EGO-Swarm's launch files.
 Of course, some topic names are changed from EGO-Planner, check it using `rqt_graph` and `rosnode info <package name>`.
 
-# Quick Start within 3 Minutes 
-Compiling tests passed on ubuntu **16.04, 18.04 and 20.04** with ros installed.
-You can just execute the following commands one by one.
-```
-sudo apt-get install libarmadillo-dev
-git clone https://github.com/ZJU-FAST-Lab/ego-planner.git
-cd ego-planner
-catkin_make
-source devel/setup.bash
-roslaunch ego_planner simple_run.launch
-```
-If your network to github is slow, We recommend you to try the gitee repository [https://gitee.com/iszhouxin/ego-planner](https://gitee.com/iszhouxin/ego-planner). They synchronize automatically.
-
-If you find this work useful or interesting, please kindly give us a star :star:, thanks!:grinning:
-
 # Acknowledgements
 - The framework of this repository is based on [Fast-Planner](https://github.com/HKUST-Aerial-Robotics/Fast-Planner) by Zhou Boyu who achieves impressive proformance on quadrotor local planning.
 
@@ -48,38 +33,23 @@ EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou,
 
 ## 2. Standard Compilation
 
-**Requirements**: ubuntu 16.04, 18.04 or 20.04 with ros-desktop-full installation.
-
 **Step 1**. Install [Armadillo](http://arma.sourceforge.net/), which is required by **uav_simulator**.
 ```
-sudo apt-get install libarmadillo-dev
+apt-get install libarmadillo-dev
 ``` 
 
-**Step 2**. Clone the code from github or gitee. This two repositories synchronize automaticly.
-
-From github,
-```
-git clone -b noetic-ZJU https://github.com/HuaYuXiao/EGO-Planner.git
-```
-
 **Step 3**. Compile,
-```
-cd ego-planner
-catkin_make install --source src/EGO-Planner --build build/EGO-Planner -DCMAKE_BUILD_TYPE=Release
+
+```bash
+catkin_make install --source src/EGO-Planner/plan_manage --build build/ego_planner
 ```
 
 **Step 4**. Run.
 
 In a terminal at the _ego-planner/_ folder, open the rviz for visuallization and interactions
-```
-source devel/setup.bash
-roslaunch ego_planner rviz.launch
-```
 
-In another terminal at the _ego-planner/_, run the planner in simulation by
-```
-source devel/setup.bash
-roslaunch ego_planner run_in_sim.launch
+```bash
+roslaunch ego_planner simulation.launch
 ```
 
 Then you can follow the gif below to control the drone.
@@ -185,10 +155,7 @@ Then, you can install the library of version 2.30.0 by
 ```
 sudo apt-key adv --keyserver keys.gnupg.net --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
 ```
-For ubuntu 16.04
-```
-sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo xenial main" -u
-```
+
 For ubuntu 18.04
 ```
 sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo bionic main" -u

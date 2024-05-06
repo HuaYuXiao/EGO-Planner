@@ -1,9 +1,7 @@
-
 #include <plan_manage/ego_replan_fsm.h>
 
 namespace ego_planner
 {
-
   void EGOReplanFSM::init(ros::NodeHandle &nh)
   {
     current_wp_ = 0;
@@ -36,9 +34,9 @@ namespace ego_planner
     exec_timer_ = nh.createTimer(ros::Duration(0.01), &EGOReplanFSM::execFSMCallback, this);
     safety_timer_ = nh.createTimer(ros::Duration(0.05), &EGOReplanFSM::checkCollisionCallback, this);
 
-    odom_sub_ = nh.subscribe("/odom_world", 1, &EGOReplanFSM::odometryCallback, this);
+    odom_sub_ = nh.subscribe("/prometheus/drone_odom", 1, &EGOReplanFSM::odometryCallback, this);
 
-    bspline_pub_ = nh.advertise<ego_planner::Bspline>("/planning/bspline", 10);
+    bspline_pub_ = nh.advertise<ego_planner::Bspline>("/prometheus/planning/bspline", 10);
     data_disp_pub_ = nh.advertise<ego_planner::DataDisp>("/planning/data_display", 100);
 
     if (target_type_ == TARGET_TYPE::MANUAL_TARGET)
@@ -200,18 +198,11 @@ namespace ego_planner
 
   void EGOReplanFSM::execFSMCallback(const ros::TimerEvent &e)
   {
-
-    static int fsm_num = 0;
-    fsm_num++;
-    if (fsm_num == 100)
-    {
-      printFSMExecState();
+//      printFSMExecState();
       if (!have_odom_)
         cout << "no odom." << endl;
       if (!trigger_)
         cout << "wait for goal." << endl;
-      fsm_num = 0;
-    }
 
     switch (exec_state_)
     {
@@ -259,7 +250,6 @@ namespace ego_planner
       bool success = callReboundReplan(true, flag_random_poly_init);
       if (success)
       {
-
         changeFSMExecState(EXEC_TRAJ, "FSM");
         flag_escape_emergency_ = true;
       }
@@ -516,10 +506,7 @@ namespace ego_planner
       {
         // todo
         ROS_ERROR("last_progress_time_ ERROR !!!!!!!!!");
-        ROS_ERROR("last_progress_time_ ERROR !!!!!!!!!");
-        ROS_ERROR("last_progress_time_ ERROR !!!!!!!!!");
-        ROS_ERROR("last_progress_time_ ERROR !!!!!!!!!");
-        ROS_ERROR("last_progress_time_ ERROR !!!!!!!!!");
+
         return;
       }
       if (dist < dist_min)
@@ -551,5 +538,4 @@ namespace ego_planner
       // cout << "AA" << endl;
     }
   }
-
 } // namespace ego_planner

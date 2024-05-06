@@ -1,27 +1,3 @@
-# Note!
-Our recently developed planner [EGO-Swarm](https://github.com/ZJU-FAST-Lab/ego-planner-swarm) is an evolution from EGO-Planner. 
-It is more robust and safe, and therefore, is more recommended to use.
-If you have only one drone, just set the `drone_id` to `0` in EGO-Swarm's launch files.
-Of course, some topic names are changed from EGO-Planner, check it using `rqt_graph` and `rosnode info <package name>`.
-
-
-
-
-
-If your network to github is slow, We recommend you to try the gitee repository [https://gitee.com/iszhouxin/ego-planner](https://gitee.com/iszhouxin/ego-planner). They synchronize automatically.
-
-If you find this work useful or interesting, please kindly give us a star :star:, thanks!:grinning:
-
-# Acknowledgements
-- The framework of this repository is based on [Fast-Planner](https://github.com/HKUST-Aerial-Robotics/Fast-Planner) by Zhou Boyu who achieves impressive proformance on quadrotor local planning.
-
-- The L-BFGS solver we use is from [LBFGS-Lite](https://github.com/ZJU-FAST-Lab/LBFGS-Lite). 
-It is a C++ head-only single file, which is lightweight and easy to use.
-
-- The map generated in simulation is from [mockamap](https://github.com/HKUST-Aerial-Robotics/mockamap) by William Wu.
-
-- The hardware architecture is based on an open source implemation from [Teach-Repeat-Replan](https://github.com/HKUST-Aerial-Robotics/Teach-Repeat-Replan).
-
 # EGO-Planner 
 EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors
 
@@ -39,14 +15,19 @@ EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors
 ## 1. Related Paper
 EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou, Zhepei Wang, Chao Xu and Fei Gao (Accepted by RA-L). [arXiv Preprint](https://arxiv.org/abs/2008.08835), [IEEE Xplore](https://ieeexplore.ieee.org/abstract/document/9309347), and [IEEE Spectrum report](https://spectrum.ieee.org/automaton/robotics/robotics-hardware/video-friday-mit-media-lab-tf8-bionic-ankle).
 
+
+# Acknowledgements
+- The framework of this repository is based on [Fast-Planner](https://github.com/HKUST-Aerial-Robotics/Fast-Planner) by Zhou Boyu who achieves impressive proformance on quadrotor local planning.
+
+- The L-BFGS solver we use is from [LBFGS-Lite](https://github.com/ZJU-FAST-Lab/LBFGS-Lite).
+  It is a C++ head-only single file, which is lightweight and easy to use.
+
+- The map generated in simulation is from [mockamap](https://github.com/HKUST-Aerial-Robotics/mockamap) by William Wu.
+
+- The hardware architecture is based on an open source implemation from [Teach-Repeat-Replan](https://github.com/HKUST-Aerial-Robotics/Teach-Repeat-Replan).
+
+
 ## 2. Standard Compilation
-
-**Requirements**: ubuntu 16.04, 18.04 or 20.04 with ros-desktop-full installation.
-
-**Step 1**. Install [Armadillo](http://arma.sourceforge.net/), which is required by **uav_simulator**.
-```
-sudo apt-get install libarmadillo-dev
-``` 
 
 **Step 3**. Compile,
 
@@ -68,29 +49,6 @@ Then you can follow the gif below to control the drone.
 <img src="pictures/sim_demo.gif" width = "640" height = "438" border="5" />
 </p>
 
-## 3. Using an IDE
-We recommend using [vscode](https://code.visualstudio.com/), the project file has been included in the code you have cloned, which is the _.vscode_ folder.
-This folder is **hidden** by default.
-Follow the steps below to configure the IDE for auto code completion & jump.
-It will take 3 minutes.
-
-**Step 1**. Install C++ and CMake extentions in vscode.
-
-**Step 2**. Re-compile the code using command
-```
-catkin_make -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=Yes
-```
-It will export a compile commands file, which can help vscode to determine the code architecture.
-
-**Step 3**. Launch vscode and select the _ego-planner_ folder to open.
-```
-code ~/<......>/ego-planner/
-```
-
-Press **Ctrl+Shift+B** in vscode to compile the code. This command is defined in _.vscode/tasks.json_.
-You can add customized arguments after **"args"**. The default is **"-DCMAKE_BUILD_TYPE=Release"**.
-
-**Step 4**. Close and re-launch vscode, you will see the vscode has already understood the code architecture and can perform auto completion & jump.
 
  ## 4. Use GPU or Not
  Packages in this repo, **local_sensing** have GPU, CPU two different versions. By default, they are in CPU version for better compatibility. By changing

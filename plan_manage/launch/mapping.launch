@@ -36,5 +36,5 @@
     <!--    <node pkg="prometheus_plan_manage" type="laser_to_pointcloud.py" name="laser_to_pointcloud" >-->
     <!--    </node>-->
 
-    <node pkg="uav_octomapping" type="pcl_merge" name="pcl_merge" launch-prefix="gnome-terminal --"/>
+    <node pkg="uav_octomapping" type="pcl_merge" name="pcl_merge"/>
 </launch>

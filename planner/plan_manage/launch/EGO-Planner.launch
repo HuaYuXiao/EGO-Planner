@@ -1,0 +1,190 @@
+<!-- ego_planner 仿真 -->
+<launch>
+        <!-- 无人机编号 -->
+        <arg name="uav_id" default="1"/>
+
+        <!-- 地图尺寸 -->
+        <arg name="resolution" value="0.05"/>
+        <arg name="map_size_x_" value="16.0"/>
+        <arg name="map_size_y_" value="10.0"/>
+        <arg name="map_size_z_" value="3.0"/>
+
+        <arg name="map_origin_x_" value="-8.0"/>
+        <arg name="map_origin_y_" value="-5.0"/>
+        <arg name="map_origin_z_" value="0.0"/>
+
+        <!-- 可以通过限制ground_height和map_size_z来使得飞机在特定高度飞行 -->
+        <!-- 虚拟天花板高度要小于等于ground_height+z_size，否则重置该高度 -->
+        <arg name="ground_height" value="0.0"/>
+
+        <!-- 里程计话题 -->
+        <arg name="odometry_topic" value="/prometheus/drone_odom"/>
+        <!-- TODO: 相机及深度信息仿真中没有使用，此处可忽略(真机中使用) -->
+        <arg name="camera_pose_topic" value="/mavros/local_position/pose"/>
+        <arg name="depth_topic" value="/camera/depth/image_raw"/>
+        <!-- 点云信息，仿真中由map_generator产生 -->
+        <arg name="cloud_topic" value="/octomap_point_cloud_centers"/>
+        <!-- scan -->
+<!--        <arg name="scan_topic" value="/prometheus/sensors/3Dlidar_scan"/>-->
+
+        <arg name="cx" value="321.04638671875"/>
+        <arg name="cy" value="243.44969177246094"/>
+        <arg name="fx" value="387.229248046875"/>
+        <arg name="fy" value="387.229248046875"/>
+
+        <!-- 最大速度及加速度 -->
+        <arg name="max_vel" value="1.0"/>
+        <arg name="max_acc" value="1.0"/>
+        <arg name="max_jerk" value="4.0"/>
+
+        <!-- 规划的范围，一般设置为感知范围的1.5倍 -->
+        <!--always set to 1.5 times grater than sensing horizen-->
+        <arg name="planning_horizon" value="5.0" />
+
+        <!-- global waypoints -->
+        <!-- It generates a piecewise min-snap traj passing all waypoints -->
+        <arg name="point_num" value="4" />
+        <arg name="point0_x" value="-6.0" />
+        <arg name="point0_y" value="-3.0" />
+        <arg name="point0_z" value="1.5" />
+
+        <arg name="point1_x" value="0.0" />
+        <arg name="point1_y" value="3.0" />
+        <arg name="point1_z" value="1.5" />
+
+        <arg name="point2_x" value="3.0" />
+        <arg name="point2_y" value="-3.0" />
+        <arg name="point2_z" value="1.5" />
+
+        <arg name="point3_x" value="6.0" />
+        <arg name="point3_y" value="-7.0" />
+        <arg name="point3_z" value="1.5" />
+
+        <!-- 1: use 2D Nav Goal to select goal  -->
+        <!-- 2: use global waypoints below  -->
+        <!-- 单机建议直接使用rviz指定目标点,多机情况请预设目标点 -->
+        <arg name="flight_type" value="1" />
+
+        <!-- ？ -->
+        <arg name="use_distinctive_trajs" value="true" />
+
+        <!-- main node -->
+        <node pkg="ego_planner" type="ego_planner_node" name="ego_planner_node" output="screen" launch-prefix="gnome-terminal --">
+<!--        <node pkg="ego_planner" type="ego_planner_node" name="ego_planner_node" output="log">-->
+                <remap from="~odom_world" to="$(arg odometry_topic)"/>
+                <remap from="~planning/bspline" to = "/planning/bspline"/>
+                <remap from="~planning/data_display" to = "/planning/data_display"/>
+                <remap from="~planning/broadcast_bspline_from_planner" to = "/broadcast_bspline"/>
+                <remap from="~planning/broadcast_bspline_to_planner" to = "/broadcast_bspline"/>
+
+                <!-- planning fsm -->
+                <param name="fsm/flight_type" value="$(arg flight_type)" type="int"/>
+                <!-- 重规划时间间隔，如果要增大规划频率，则减小该数值 -->
+                <param name="fsm/thresh_replan_time" value="1.0" type="double"/>
+                <!-- 重规划阈值：距离终点小于该阈值时，停止规划 -->
+                <param name="fsm/thresh_no_replan_meter" value="0.2" type="double"/>
+                <!-- 规划范围 -->
+                <param name="fsm/planning_horizon" value="$(arg planning_horizon)" type="double"/>
+                <!-- 紧急停止时间 -->
+                <param name="fsm/emergency_time" value="1.0" type="double"/>
+                <!-- 仿真与实际标志位，实际中需要等待一个起始话题 -->
+                <param name="fsm/realworld_experiment" value="false"/>
+                <param name="fsm/fail_safe" value="true"/>
+
+                <!-- GridMap参数 -->
+            <remap from="~grid_map/odom" to="$(arg odometry_topic)"/>
+            <remap from="~grid_map/cloud" to="$(arg cloud_topic)"/>
+            <remap from="~grid_map/pose"   to = "$(arg camera_pose_topic)"/>
+            <remap from="~grid_map/depth" to = "$(arg depth_topic)"/>
+                <!-- 分辨率、地图尺寸 -->
+                <param name="grid_map/resolution"      value="$(arg resolution)" />
+                <param name="grid_map/map_size_x"   value="$(arg map_size_x_)" />
+                <param name="grid_map/map_size_y"   value="$(arg map_size_y_)" />
+                <param name="grid_map/map_size_z"   value="$(arg map_size_z_)" />
+                <!-- 地图更新距离 -->
+                <param name="grid_map/local_update_range_x"  value="5.5" />
+                <param name="grid_map/local_update_range_y"  value="5.5" />
+                <param name="grid_map/local_update_range_z"  value="4.5" />
+                <!-- 膨胀距离 -->
+                <param name="grid_map/obstacles_inflation"     value="0.3" />
+                <param name="grid_map/local_map_margin" value="10"/>
+                <param name="grid_map/ground_height"        value="-0.01"/>
+                <!-- camera parameter -->
+                <param name="grid_map/cx" value="$(arg cx)"/>
+                <param name="grid_map/cy" value="$(arg cy)"/>
+                <param name="grid_map/fx" value="$(arg fx)"/>
+                <param name="grid_map/fy" value="$(arg fy)"/>
+                <!-- depth filter -->
+                <param name="grid_map/use_depth_filter" value="true"/>
+                <param name="grid_map/depth_filter_tolerance" value="0.15"/>
+                <param name="grid_map/depth_filter_maxdist"   value="5.0"/>
+                <param name="grid_map/depth_filter_mindist"   value="0.2"/>
+                <param name="grid_map/depth_filter_margin"    value="2"/>
+                <param name="grid_map/k_depth_scaling_factor" value="1000.0"/>
+                <param name="grid_map/skip_pixel" value="2"/>
+                <!-- local fusion -->
+                <param name="grid_map/p_hit"  value="0.65"/>
+                <param name="grid_map/p_miss" value="0.35"/>
+                <param name="grid_map/p_min"  value="0.12"/>
+                <param name="grid_map/p_max"  value="0.90"/>
+                <param name="grid_map/p_occ"  value="0.80"/>
+                <param name="grid_map/min_ray_length" value="0.1"/>
+                <param name="grid_map/max_ray_length" value="4.5"/>
+                <param name="grid_map/virtual_ceil_height"   value="2.9"/>
+                <param name="grid_map/visualization_truncate_height"   value="1.8"/>
+                <param name="grid_map/show_occ_time"  value="false"/>
+                <!-- pose_type 里程计的类型 -->
+                <param name="grid_map/pose_type"     value="1"/>
+                <!-- 地图frame -->
+                <param name="grid_map/frame_id"      value="map"/>
+
+                <!-- planner manager -->
+                <!-- 最大速度 -->
+                <param name="manager/max_vel" value="$(arg max_vel)" type="double"/>
+                <!-- 最大加速度 -->
+                <param name="manager/max_acc" value="$(arg max_acc)" type="double"/>
+                <!-- 最大加加速度 -->
+                <param name="manager/max_jerk" value="$(arg max_jerk)" type="double"/>
+                <param name="manager/control_points_distance" value="0.4" type="double"/>
+                <param name="manager/feasibility_tolerance" value="0.05" type="double"/>
+                <param name="manager/planning_horizon" value="$(arg planning_horizon)" type="double"/>
+                <param name="manager/use_distinctive_trajs" value="$(arg use_distinctive_trajs)" type="bool"/>
+                <param name="manager/drone_id" value="$(arg uav_id)"/>
+
+                <!-- B样条优化参数 -->
+                <!-- 平滑系数 -->
+                <param name="optimization/lambda_smooth" value="1.0" type="double"/>
+                <!-- 避障系数 -->
+                <param name="optimization/lambda_collision" value="0.5" type="double"/>
+                <!-- 可行性系数 -->
+                <param name="optimization/lambda_feasibility" value="0.1" type="double"/>
+                <!-- ? -->
+                <param name="optimization/lambda_fitness" value="1.0" type="double"/>
+                <param name="optimization/dist0" value="0.5" type="double"/>
+                <param name="optimization/swarm_clearance" value="0.5" type="double"/>
+                <param name="optimization/max_vel" value="$(arg max_vel)" type="double"/>
+                <param name="optimization/max_acc" value="$(arg max_acc)" type="double"/>
+
+                <!-- 这三个好像没用 -->
+                <param name="bspline/limit_vel" value="$(arg max_vel)" type="double"/>
+                <param name="bspline/limit_acc" value="$(arg max_acc)" type="double"/>
+                <param name="bspline/limit_ratio" value="1.1" type="double"/>
+        </node>
+
+        <!-- trajectory server：由B样条生成轨迹 -->
+        <!-- 偏航角初始值，重要参数 -->
+        <arg name="yaw_init" default="0.0"/>
+
+        <node pkg="ego_planner" type="traj_server" name="traj_server" output="screen">
+                <param name="uav_id" value="$(arg uav_id)"/>
+                <param name="control_flag" value="0"/>
+                <param name="traj_server/time_forward" value="1.0"/>
+                <param name="traj_server/last_yaw" value="$(arg yaw_init)"/>
+        </node>
+
+    <!-- 启动规划mission， 激光输入control_yaw_flag设为false，rgbd输入control_yaw_flag设为true -->
+    <node pkg="prometheus_mission" type="planning_mission" name="planning_mission" output="screen" launch-prefix="gnome-terminal --">
+        <param name="planning_mission/control_yaw_flag" value="false" type="bool"/>
+        <param name="planning_mission/sim_mode" value="true" type="bool"/>
+    </node>
+</launch>

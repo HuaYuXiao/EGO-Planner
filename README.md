@@ -13,23 +13,19 @@ An ESDF-free Gradient-based Local Planner for Quadrotors
 
 **Video Links:** [YouTube](https://youtu.be/UKoaGW7t7Dk), [bilibili](https://www.bilibili.com/video/BV1VC4y1t7F4/) (for Mainland China)
 
-## 1. Related Paper
+## Related Paper
 
 EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou, Zhepei Wang, Chao Xu and Fei Gao (Accepted by RA-L). [arXiv Preprint](https://arxiv.org/abs/2008.08835), [IEEE Xplore](https://ieeexplore.ieee.org/abstract/document/9309347), and [IEEE Spectrum report](https://spectrum.ieee.org/automaton/robotics/robotics-hardware/video-friday-mit-media-lab-tf8-bionic-ankle).
 
 
-# Acknowledgements
+## Acknowledgements
+
 - The framework of this repository is based on [Fast-Planner](https://github.com/HKUST-Aerial-Robotics/Fast-Planner) by Zhou Boyu who achieves impressive proformance on quadrotor local planning.
-
-- The L-BFGS solver we use is from [LBFGS-Lite](https://github.com/ZJU-FAST-Lab/LBFGS-Lite).
-  It is a C++ head-only single file, which is lightweight and easy to use.
-
-- The map generated in simulation is from [mockamap](https://github.com/HKUST-Aerial-Robotics/mockamap) by William Wu.
 
 - The hardware architecture is based on an open source implemation from [Teach-Repeat-Replan](https://github.com/HKUST-Aerial-Robotics/Teach-Repeat-Replan).
 
 
-## 2. Standard Compilation
+## Standard Compilation
 
 **Step 3**. Compile,
 
@@ -39,10 +35,10 @@ catkin_make install --source src/EGO-Planner/plan_manage --build build/ego_plann
 
 **Step 4**. Run.
 
-In a terminal at the _ego-planner/_ folder, open the rviz for visuallization and interactions
+In terminal, run the planner in simulation by
 
 ```bash
-roslaunch ego_planner simulation.launch
+roslaunch ego_planner uav_simulation.launch
 ```
 
 Then you can follow the gif below to control the drone.

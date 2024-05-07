@@ -10,7 +10,6 @@
 #include <std_msgs/Empty.h>
 #include <vector>
 #include <visualization_msgs/Marker.h>
-
 #include <bspline_opt/bspline_optimizer_ego.h>
 #include <plan_env/grid_map.h>
 #include <ego_planner/Bspline.h>
@@ -20,11 +19,8 @@
 
 using std::vector;
 
-namespace ego_planner
-{
-
-  class EGOReplanFSM
-  {
+namespace ego_planner{
+  class EGOReplanFSM{
 
   private:
     /* ---------- flag ---------- */
@@ -50,10 +46,8 @@ namespace ego_planner
     ego_planner::DataDisp data_disp_;
 
     /* parameters */
-    int target_type_; // 1 mannual select, 2 hard code
     double no_replan_thresh_, replan_thresh_;
     double waypoints_[50][3];
-    int waypoint_num_;
     double planning_horizen_, planning_horizen_time_;
     double emergency_time_;
 
@@ -88,7 +82,6 @@ namespace ego_planner
     std::pair<int, EGOReplanFSM::FSM_EXEC_STATE> timesOfConsecutiveStateCalls();
     void printFSMExecState();
 
-    void planGlobalTrajbyGivenWps();
     void getLocalTarget();
 
     /* ROS functions */
@@ -100,18 +93,13 @@ namespace ego_planner
     bool checkCollision();
 
   public:
-    EGOReplanFSM(/* args */)
-    {
-    }
-    ~EGOReplanFSM()
-    {
-    }
+    EGOReplanFSM(/* args */){}
+    ~EGOReplanFSM(){}
 
     void init(ros::NodeHandle &nh);
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
-
 } // namespace ego_planner
 
 #endif

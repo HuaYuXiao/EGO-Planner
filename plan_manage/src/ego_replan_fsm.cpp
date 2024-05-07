@@ -200,9 +200,9 @@ namespace ego_planner
   {
 //      printFSMExecState();
       if (!have_odom_)
-        cout << "no odom." << endl;
+        cout << "[planner] no odom." << endl;
       if (!trigger_)
-        cout << "wait for goal." << endl;
+        cout << "[planner] wait for goal." << endl;
 
     switch (exec_state_)
     {
@@ -295,12 +295,14 @@ namespace ego_planner
       }
       else if ((end_pt_ - pos).norm() < no_replan_thresh_)
       {
-        // cout << "near end" << endl;
+         cout << "[planner] near end" << endl;
+
         return;
       }
       else if ((info->start_pos_ - pos).norm() < replan_thresh_)
       {
-        // cout << "near start" << endl;
+         cout << "[planner] near start" << endl;
+
         return;
       }
       else

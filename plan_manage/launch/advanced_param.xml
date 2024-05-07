@@ -3,11 +3,6 @@
     <arg name="map_size_y_"/>
     <arg name="map_size_z_"/>
 
-    <arg name="odometry_topic"/>
-<!--    <arg name="camera_pose_topic"/>-->
-    <arg name="depth_topic"/>
-<!--    <arg name="cloud_topic"/>-->
-
     <arg name="cx"/>
     <arg name="cy"/>
     <arg name="fx"/>
@@ -29,17 +24,12 @@
         <param name="fsm/planning_horizon" value="$(arg planning_horizon)" type="double"/>
         <param name="fsm/emergency_time_" value="1.0" type="double"/>
 
-<!--                <remap from="/grid_map/odom" to="/camera/odom"/>-->
-        <!--        <remap from="/grid_map/cloud" to="$(arg cloud_topic)"/>-->
-<!--        <remap from = "/grid_map/pose"   to = "$(arg camera_pose_topic)"/>-->
-<!--        <remap from = "/grid_map/depth" to = "$(arg depth_topic)"/>-->
-
         <param name="grid_map/resolution"      value="0.1" />
         <param name="grid_map/map_size_x"   value="$(arg map_size_x_)" />
         <param name="grid_map/map_size_y"   value="$(arg map_size_y_)" />
         <param name="grid_map/map_size_z"   value="$(arg map_size_z_)" />
-        <param name="grid_map/local_update_range_x"  value="3.0" />
-        <param name="grid_map/local_update_range_y"  value="3.0" />
+        <param name="grid_map/local_update_range_x"  value="5.0" />
+        <param name="grid_map/local_update_range_y"  value="5.0" />
         <param name="grid_map/local_update_range_z"  value="3.0" />
         <param name="grid_map/obstacles_inflation"     value="0.35" />
         <param name="grid_map/local_map_margin" value="30"/>

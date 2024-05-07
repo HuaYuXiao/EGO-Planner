@@ -59,12 +59,12 @@ Visualization Manager:
         All Enabled: false
         D435i::camera_depth_frame:
           Value: true
+        D435i::camera_link:
+          Value: true
         base_link:
           Value: true
         base_link_frd:
           Value: false
-        camera_link:
-          Value: true
         map:
           Value: true
         map_ned:
@@ -82,21 +82,21 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
+        base_link:
+          3Dlidar_link:
+            {}
+          D435i::camera_link:
+            D435i::camera_depth_frame:
+              {}
+          base_link_frd:
+            {}
+        odom:
+          odom_ned:
+            {}
         world:
-          base_link:
-            3Dlidar_link:
-              {}
-            base_link_frd:
-              {}
-            camera_link:
-              D435i::camera_depth_frame:
-                {}
           map:
             map_ned:
               {}
-            odom:
-              odom_ned:
-                {}
       Update Interval: 0
       Value: true
     - Class: rviz/Group
@@ -184,7 +184,7 @@ Visualization Manager:
           Size (Pixels): 3
           Size (m): 0.07000000029802322
           Style: Flat Squares
-          Topic: /grid_map/occupancy_inflate
+          Topic: /grid_map/occupancy
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
@@ -226,7 +226,7 @@ Visualization Manager:
           Marker Topic: /ego_planner_node/goal_point
           Name: goal_point
           Namespaces:
-            "": true
+            {}
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -234,7 +234,7 @@ Visualization Manager:
           Marker Topic: /ego_planner_node/global_list
           Name: global_path
           Namespaces:
-            "": true
+            {}
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -242,7 +242,7 @@ Visualization Manager:
           Marker Topic: /ego_planner_node/optimal_list
           Name: optimal_traj
           Namespaces:
-            "": true
+            {}
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -258,7 +258,7 @@ Visualization Manager:
           Marker Topic: /ego_planner_node/init_list
           Name: InitTraj
           Namespaces:
-            "": true
+            {}
           Queue Size: 100
           Value: true
       Enabled: true
@@ -351,4 +351,4 @@ Window Geometry:
     collapsed: false
   Width: 2074
   X: 806
-  Y: 508
+  Y: 471

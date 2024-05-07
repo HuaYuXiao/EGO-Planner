@@ -27,7 +27,6 @@
         <param name="fsm/thresh_no_replan" value="0.2" type="double"/>
         <!--always set to 1.5 times grater than sensing horizen-->
         <param name="fsm/planning_horizon" value="$(arg planning_horizon)" type="double"/>
-        <param name="fsm/planning_horizen_time" value="3" type="double"/>
         <param name="fsm/emergency_time_" value="1.0" type="double"/>
 
 <!--                <remap from="/grid_map/odom" to="/camera/odom"/>-->

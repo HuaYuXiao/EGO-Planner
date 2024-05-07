@@ -48,7 +48,7 @@ namespace ego_planner{
     /* parameters */
     double no_replan_thresh_, replan_thresh_;
     double waypoints_[50][3];
-    double planning_horizen_, planning_horizen_time_;
+    double planning_horizen_;
     double emergency_time_;
 
     /* planning data */

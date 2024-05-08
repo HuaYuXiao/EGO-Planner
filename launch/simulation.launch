@@ -1,12 +1,13 @@
 <launch>
     <!-- parameter for planner -->
+    <arg name="model" default="p450_3Dlidar_D435i"/>
     <arg name="planner" default="EGO-Planner"/>
 
     <!-- world -->
-    <include file="$(find ego_planner)/launch/empty_world.launch"/>
+    <include file="$(find prometheus_gazebo)/launch/GFKD.launch"/>
 
     <!-- 1号无人机 -->
-    <include file="$(find ego_planner)/launch/sitl.launch"/>
+    <include file="$(find prometheus_gazebo)/launch/sitl_$(arg model).launch"/>
 
     <include file="$(find ego_planner)/launch/uav_control_main_indoor.launch"/>
 

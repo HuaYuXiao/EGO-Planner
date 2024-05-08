@@ -3,8 +3,7 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /无人机状态1/Drone_Path1
+      Expanded: ~
       Splitter Ratio: 0.43611112236976624
     Tree Height: 178
   - Class: rviz/Selection
@@ -82,18 +81,18 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_link:
-          3Dlidar_link:
-            {}
-          D435i::camera_link:
-            D435i::camera_depth_frame:
-              {}
-          base_link_frd:
-            {}
         odom:
           odom_ned:
             {}
         world:
+          base_link:
+            3Dlidar_link:
+              {}
+            D435i::camera_link:
+              D435i::camera_depth_frame:
+                {}
+            base_link_frd:
+              {}
           map:
             map_ned:
               {}
@@ -120,7 +119,7 @@ Visualization Manager:
         - Alpha: 1
           Buffer Length: 30
           Class: rviz/Path
-          Color: 255; 25; 0
+          Color: 255; 255; 0
           Enabled: true
           Head Diameter: 0.30000001192092896
           Head Length: 0.20000000298023224
@@ -226,7 +225,7 @@ Visualization Manager:
           Marker Topic: /ego_planner_node/goal_point
           Name: goal_point
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -234,7 +233,7 @@ Visualization Manager:
           Marker Topic: /ego_planner_node/global_list
           Name: global_path
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -242,7 +241,7 @@ Visualization Manager:
           Marker Topic: /ego_planner_node/optimal_list
           Name: optimal_traj
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -250,7 +249,7 @@ Visualization Manager:
           Marker Topic: /ego_planner_node/a_star_list
           Name: AStar
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -258,7 +257,7 @@ Visualization Manager:
           Marker Topic: /ego_planner_node/init_list
           Name: InitTraj
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
       Enabled: true
@@ -351,4 +350,4 @@ Window Geometry:
     collapsed: false
   Width: 2074
   X: 806
-  Y: 471
+  Y: 508

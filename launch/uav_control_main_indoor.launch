@@ -20,7 +20,7 @@
 
         <!-- 启动uav_control_main -->
         <node pkg="uav_control" type="px4_pos_controller" name="px4_pos_controller" output="screen">
-            <rosparam command="load" file="$(find uav_simulation)/config/uav_control_indoor.yaml"/>
+            <rosparam command="load" file="$(find prometheus_gazebo)/config/uav_control_indoor.yaml"/>
         </node>
 
         <!-- 启动虚拟摇杆驱动 -->
@@ -29,11 +29,11 @@
 
         <!-- run the terminal_control.cpp -->
         <node pkg="uav_control" type="terminal_control" name="terminal_control" output="screen" launch-prefix="gnome-terminal --">
-            <rosparam command="load" file="$(find uav_simulation)/config/uav_control_indoor.yaml"/>
+            <rosparam command="load" file="$(find prometheus_gazebo)/config/uav_control_indoor.yaml"/>
         </node>
     </group>
 
     <!-- STATION -->
-    <include file="$(find ego_planner)/launch/prometheus_station.launch">
+    <include file="$(find prometheus_station)/launch/prometheus_station.launch">
     </include>
 </launch>

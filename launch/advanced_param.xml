@@ -11,15 +11,17 @@
     <arg name="max_vel"/>
     <arg name="max_acc"/>
     <arg name="max_jerk"/>
+
     <arg name="planning_horizon"/>
 
     <!-- main node -->
     <node pkg="ego_planner" name="ego_planner_node" type="ego_planner_node" output="screen" launch-prefix="gnome-terminal --">
+<!--        <node pkg="ego_planner" name="ego_planner_node" type="ego_planner_node" output="screen">-->
         <!-- planning fsm -->
         <!-- near start -->
-        <param name="fsm/thresh_replan" value="0.2" type="double"/>
+        <param name="fsm/thresh_replan" value="0.1" type="double"/>
         <!-- near end -->
-        <param name="fsm/thresh_no_replan" value="0.2" type="double"/>
+        <param name="fsm/thresh_no_replan" value="0.1" type="double"/>
         <!--always set to 1.5 times grater than sensing horizen-->
         <param name="fsm/planning_horizon" value="$(arg planning_horizon)" type="double"/>
         <param name="fsm/emergency_time_" value="1.0" type="double"/>
@@ -28,11 +30,11 @@
         <param name="grid_map/map_size_x"   value="$(arg map_size_x_)" />
         <param name="grid_map/map_size_y"   value="$(arg map_size_y_)" />
         <param name="grid_map/map_size_z"   value="$(arg map_size_z_)" />
-        <param name="grid_map/local_update_range_x"  value="5.0" />
-        <param name="grid_map/local_update_range_y"  value="5.0" />
-        <param name="grid_map/local_update_range_z"  value="3.0" />
+        <param name="grid_map/local_update_range_x"  value="4.0" />
+        <param name="grid_map/local_update_range_y"  value="4.0" />
+        <param name="grid_map/local_update_range_z"  value="2.0" />
         <param name="grid_map/obstacles_inflation"     value="0.35" />
-        <param name="grid_map/local_map_margin" value="30"/>
+        <param name="grid_map/local_map_margin" value="10"/>
         <param name="grid_map/ground_height"        value="-0.01"/>
         <!-- camera parameter -->
         <param name="grid_map/cx" value="$(arg cx)"/>

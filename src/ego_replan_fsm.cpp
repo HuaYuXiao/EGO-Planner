@@ -188,9 +188,7 @@ namespace ego_planner
       if (planFromCurrentTraj())
       {
         changeFSMExecState(EXEC_TRAJ, "FSM");
-      }
-      else
-      {
+      }else{
         changeFSMExecState(REPLAN_TRAJ, "FSM");
       }
 
@@ -208,27 +206,20 @@ namespace ego_planner
       Eigen::Vector3d pos = info->position_traj_.evaluateDeBoorT(t_cur);
 
       /* && (end_pt_ - pos).norm() < 0.5 */
-      if (t_cur > info->duration_ - 1e-2)
-      {
+      if (t_cur > info->duration_ - 1e-2){
         have_target_ = false;
 
         changeFSMExecState(WAIT_TARGET, "FSM");
         return;
-      }
-      else if ((end_pt_ - pos).norm() < no_replan_thresh_)
-      {
-         cout << "[planner] near end" << endl;
+      }else if ((end_pt_ - pos).norm() < no_replan_thresh_){
+//         cout << "[planner] near end" << endl;
 
         return;
-      }
-      else if ((info->start_pos_ - pos).norm() < replan_thresh_)
-      {
-         cout << "[planner] near start" << endl;
+      }else if ((info->start_pos_ - pos).norm() < replan_thresh_){
+//         cout << "[planner] near start" << endl;
 
         return;
-      }
-      else
-      {
+      }else{
         changeFSMExecState(REPLAN_TRAJ, "FSM");
       }
       break;

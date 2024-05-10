@@ -239,7 +239,7 @@ int main(int argc, char **argv)
 
   pos_cmd_pub = node.advertise<quadrotor_msgs::PositionCommand>("/prometheus/quadrotor_position_cmd", 50);
 
-  ros::Timer cmd_timer = node.createTimer(ros::Duration(0.01), cmdCallback);
+  ros::Timer cmd_timer = node.createTimer(ros::Duration(0.02), cmdCallback);
 
   /* control parameter */
   cmd.kx[0] = pos_gain[0];
@@ -251,6 +251,7 @@ int main(int argc, char **argv)
   cmd.kv[2] = vel_gain[2];
 
   nh.param("traj_server/time_forward", time_forward_, -1.0);
+
   last_yaw_ = 0.0;
   last_yaw_dot_ = 0.0;
 

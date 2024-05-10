@@ -1,19 +1,12 @@
 # EGO-Planner 
 
-An ESDF-free Gradient-based Local Planner for Quadrotors
+An ESDF-free Gradient-based Local Planner for Quadrotors, modified from []()
 
 **EGO-Planner** is a lightweight gradient-based local planner without ESDF construction, which significantly reduces computation time compared to some state-of-the-art methods <!--(EWOK and Fast-Planner)-->. The total planning time is only **around 1ms** and don't need to compute ESDF.
 
-<p align = "center">
-<img src="pictures/title.gif" width = "413" height = "232" border="5" />
-<img src="pictures/comp.jpg" width = "413" height = "232" border="5" />
-<img src="pictures/indoor.gif" width = "413" height = "232" border="5" />
-<img src="pictures/outdoor.gif" width = "413" height = "232" border="5" />
-</p>
+**Video Links:** [YouTube](https://youtu.be/UKoaGW7t7Dk), [bilibili](https://www.bilibili.com/video/BV1VC4y1t7F4/)
 
-**Video Links:** [YouTube](https://youtu.be/UKoaGW7t7Dk), [bilibili](https://www.bilibili.com/video/BV1VC4y1t7F4/) (for Mainland China)
-
-## 1. Related Paper
+## Related Paper
 
 EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou, Zhepei Wang, Chao Xu and Fei Gao (Accepted by RA-L). [arXiv Preprint](https://arxiv.org/abs/2008.08835), [IEEE Xplore](https://ieeexplore.ieee.org/abstract/document/9309347), and [IEEE Spectrum report](https://spectrum.ieee.org/automaton/robotics/robotics-hardware/video-friday-mit-media-lab-tf8-bionic-ankle).
 
@@ -28,18 +21,17 @@ EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou,
 
 - The hardware architecture is based on an open source implemation from [Teach-Repeat-Replan](https://github.com/HKUST-Aerial-Robotics/Teach-Repeat-Replan).
 
+## Release Note
 
-## 2. Standard Compilation
+- v1.2.0: support `POS_VEL_ACC` control
+- v1.0.2: replace `prometheus_msgs` with `quadrotor_msgs`
+- v1.0.1: mapping with D435i
 
-**Step 3**. Compile,
+## Standard Compilation
 
 ```bash
-catkin_make install --source src/EGO-Planner/plan_manage --build build/ego_planner
+catkin_make install --source src/EGO-Planner --build build/ego_planner
 ```
-
-**Step 4**. Run.
-
-In a terminal at the _ego-planner/_ folder, open the rviz for visuallization and interactions
 
 ```bash
 roslaunch ego_planner simulation.launch
@@ -52,7 +44,7 @@ Then you can follow the gif below to control the drone.
 </p>
 
 
- ## 4. Use GPU or Not
+ ## Use GPU or Not
  Packages in this repo, **local_sensing** have GPU, CPU two different versions. By default, they are in CPU version for better compatibility. By changing
  
  ```
@@ -81,7 +73,8 @@ Don't forget to re-compile the code!
 
 For installation of CUDA, please go to [CUDA ToolKit](https://developer.nvidia.com/cuda-toolkit)
 
-## 5. Utilize the Full Performance of CPU
+## Utilize the Full Performance of CPU
+
 The computation time of our planner is too short for the OS to increase CPU frequency, which makes the computation time tend to be longer and unstable.
 
 Therefore, we recommend you to manually set the CPU frequency to the maximum.
@@ -97,7 +90,7 @@ More information can be found in [http://www.thinkwiki.org/wiki/How_to_use_cpufr
 
 Note that CPU frequency may still decrease due to high temperature in high load.
 
-# Improved ROS-RealSense Driver
+## Improved ROS-RealSense Driver
 
 We modified the ros-relasense driver to enable the laser emitter strobe every other frame, allowing the device to output high quality depth images with the help of emitter, and along with binocular images free from laser interference.
 
@@ -126,7 +119,6 @@ Then, you can install the library of version 2.30.0 by
 sudo apt-key adv --keyserver keys.gnupg.net --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
 ```
 
-For ubuntu 18.04
 ```
 sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo bionic main" -u
 ```
@@ -166,10 +158,8 @@ roslaunch so3_quadrotor_simulator simulator_example.launch
 to run a simple example in ego-planner/src/uav_simulator/so3/control/src/control_example.cpp.
 If this simulator is helpful to you, plaease kindly give a star to [Fast-Planner](https://github.com/HKUST-Aerial-Robotics/Fast-Planner) as well.-->
 
-# Licence
-The source code is released under [GPLv3](http://www.gnu.org/licenses/) license.
 
-# Maintaince
+## Maintaince
 We are still working on extending the proposed system and improving code reliability. 
 
 For any technical issues, please contact Xin Zhou (iszhouxin@zju.edu.cn) or Fei GAO (fgaoaa@zju.edu.cn).

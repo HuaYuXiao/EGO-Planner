@@ -5,3 +5,5 @@ devel/
 files/
 benchmark_haha.zip
 rebound_planner_BB.zip
+cmake-build-debug/
+.idea/

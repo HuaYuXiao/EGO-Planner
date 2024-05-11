@@ -4,7 +4,7 @@ An ESDF-free Gradient-based Local Planner for Quadrotors, modified from [ego_pla
 
 **EGO-Planner** is a lightweight gradient-based local planner without ESDF construction, which significantly reduces computation time compared to some state-of-the-art methods <!--(EWOK and Fast-Planner)-->. The total planning time is only **around 1ms** and don't need to compute ESDF.
 
-**Video Links:** [YouTube](https://youtu.be/UKoaGW7t7Dk), [bilibili](https://www.bilibili.com/video/BV1VC4y1t7F4/)
+Video on [bilibili](https://www.bilibili.com/video/BV1dt421c7Em/)
 
 
 ## Related Paper
@@ -17,8 +17,6 @@ EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou,
 
 - The L-BFGS solver we use is from [LBFGS-Lite](https://github.com/ZJU-FAST-Lab/LBFGS-Lite).
   It is a C++ head-only single file, which is lightweight and easy to use.
-
-- The map generated in simulation is from [mockamap](https://github.com/HKUST-Aerial-Robotics/mockamap) by William Wu.
 
 - The hardware architecture is based on an open source implemation from [Teach-Repeat-Replan](https://github.com/HKUST-Aerial-Robotics/Teach-Repeat-Replan).
 
@@ -112,7 +110,7 @@ Parameter ```emitter_on_off``` is to turn on/off the added function.
 Note that if this function is turned on, the output frame rate from the device will be reduced to half of the frame rate you set, since the device uses half of the stream for depth estimation and the other half as binocular grayscale outputs.
 What's more, parameters ```depth_fps``` and ```infra_fps``` must be identical, and ```enable_emitter``` must be true as well under this setting.
 
-##  Install
+### Install
 
 The driver of librealsense2 2.30.0 should be installed explicitly.
 On a x86 CPU, this can be performed easily within 5 minutes.
@@ -144,7 +142,7 @@ Here you can varify the installation by
 realsense-viewer
 ```
 
-##  Run
+### Run
 
 If everything looks well, you can now compile the ros-realsense package named _modified_realsense2_camera.zip_ by ```catkin_make```, then run ros realsense node by 
 ```
@@ -152,21 +150,9 @@ roslaunch realsense_camera rs_camera.launch
 ```
 Then you will receive depth stream along with binocular stream together at 30Hz by default.
 
-<!--
-# A Lightweight Quadrotor Simulator
-
-The quadrotor simulator we use is inherited and modified from [Fast-Planner](https://github.com/HKUST-Aerial-Robotics/Fast-Planner). 
-It is lightweight and super easy to use.
-Only one topic is required to control the drone.
-You can execute 
-```
-roslaunch so3_quadrotor_simulator simulator_example.launch 
-```
-to run a simple example in ego-planner/src/uav_simulator/so3/control/src/control_example.cpp.
-If this simulator is helpful to you, plaease kindly give a star to [Fast-Planner](https://github.com/HKUST-Aerial-Robotics/Fast-Planner) as well.-->
-
 
 ## Maintaince
+
 We are still working on extending the proposed system and improving code reliability. 
 
 For any technical issues, please contact Xin Zhou (iszhouxin@zju.edu.cn) or Fei GAO (fgaoaa@zju.edu.cn).

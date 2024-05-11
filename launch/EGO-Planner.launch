@@ -1,7 +1,7 @@
 <launch>
   <!-- size of map, change the size inflate x, y, z according to your application -->
   <!-- 定义仅在launch文件中起作用的局部变量大小，即地图大小-->
-  <arg name="map_size_x" value="10.0"/>
+  <arg name="map_size_x" value="16.0"/>
   <arg name="map_size_y" value="10.0"/>
   <arg name="map_size_z" value="3.0"/>
 

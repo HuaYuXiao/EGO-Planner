@@ -8,6 +8,7 @@
     <arg name="fx"/>
     <arg name="fy"/>
 
+        <!-- maximum velocity and acceleration the drone will reach -->
     <arg name="max_vel"/>
     <arg name="max_acc"/>
     <arg name="max_jerk"/>
@@ -18,10 +19,10 @@
     <node pkg="ego_planner" name="ego_planner_node" type="ego_planner_node" output="screen" launch-prefix="gnome-terminal --">
 <!--        <node pkg="ego_planner" name="ego_planner_node" type="ego_planner_node" output="screen">-->
         <!-- planning fsm -->
-        <!-- near start -->
-        <param name="fsm/thresh_replan" value="0.1" type="double"/>
-        <!-- near end -->
-        <param name="fsm/thresh_no_replan" value="0.1" type="double"/>
+        <!-- time to replan, the less, the higher frequency -->
+        <param name="fsm/thresh_replan" value="0.05" type="double"/>
+        <!-- 目标点与无人机当前位置小于no_replan_thresh_就不需要再规划到这个点的轨迹 -->
+        <param name="fsm/thresh_no_replan" value="0.2" type="double"/>
         <!--always set to 1.5 times grater than sensing horizen-->
         <param name="fsm/planning_horizon" value="$(arg planning_horizon)" type="double"/>
         <param name="fsm/emergency_time_" value="1.0" type="double"/>
@@ -36,7 +37,9 @@
         <param name="grid_map/obstacles_inflation"     value="0.35" />
         <param name="grid_map/local_map_margin" value="10"/>
         <param name="grid_map/ground_height"        value="-0.01"/>
+
         <!-- camera parameter -->
+            <!-- intrinsic params of the depth camera -->
         <param name="grid_map/cx" value="$(arg cx)"/>
         <param name="grid_map/cy" value="$(arg cy)"/>
         <param name="grid_map/fx" value="$(arg fx)"/>
@@ -59,7 +62,7 @@
         <param name="grid_map/max_ray_length" value="4.5"/>
 
         <param name="grid_map/virtual_ceil_height"   value="2.99"/>
-        <param name="grid_map/visualization_truncate_height"   value="2.4"/>
+        <param name="grid_map/visualization_truncate_height"   value="2.9"/>
         <param name="grid_map/show_occ_time"  value="false"/>
         <!-- 1: pose; 2: odom -->
         <param name="grid_map/pose_type"     value="2"/>
@@ -81,10 +84,10 @@
         <param name="optimization/dist0" value="0.5" type="double"/>
         <param name="optimization/max_vel" value="$(arg max_vel)" type="double"/>
         <param name="optimization/max_acc" value="$(arg max_acc)" type="double"/>
-        <param name="optimization/max_jerk" value="$(arg max_jerk)" type="double"/>
+<!--        <param name="optimization/max_jerk" value="$(arg max_jerk)" type="double"/>-->
 
         <param name="bspline/limit_vel" value="$(arg max_vel)" type="double"/>
         <param name="bspline/limit_acc" value="$(arg max_acc)" type="double"/>
-        <param name="bspline/limit_ratio" value="$(arg max_jerk)" type="double"/>
+        <param name="bspline/limit_ratio" value="1.1" type="double"/>
     </node>
 </launch>

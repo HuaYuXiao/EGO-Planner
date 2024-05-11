@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>ego_planner</name>
-  <version>1.2.1</version>
+  <version>1.3.0</version>
   <description>
-    The ego_planner package
+    An ESDF-free Gradient-based Local Planner for Quadrotors
   </description>
-  <author email="jane.doe@example.com">Jane Doe</author>
+  <author email="iszhouxin@zju.edu.cn">iszhouxin</author>
   <maintainer email="hyx020222@gmail.com">Eason Hua</maintainer>
   <license>Apache</license>
 

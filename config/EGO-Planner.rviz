@@ -3,7 +3,10 @@ Panels:
     Help Height: 0
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /无人机状态1
+        - /Mapping1
+        - /Planning1
       Splitter Ratio: 0.43611112236976624
     Tree Height: 640
   - Class: rviz/Selection
@@ -32,7 +35,7 @@ Visualization Manager:
     - Alpha: 0.5
       Cell Size: 1
       Class: rviz/Grid
-      Color: 160; 160; 164
+      Color: 0; 0; 0
       Enabled: true
       Line Style:
         Line Width: 0.029999999329447746
@@ -121,25 +124,9 @@ Visualization Manager:
           Unreliable: false
           Value: true
         - Alpha: 1
-          Axes Length: 0.20000000298023224
-          Axes Radius: 0.019999999552965164
-          Class: rviz/Pose
-          Color: 255; 0; 255
-          Enabled: true
-          Head Length: 0.30000001192092896
-          Head Radius: 0.10000000149011612
-          Name: Reference_Pose
-          Queue Size: 10
-          Shaft Length: 0.5
-          Shaft Radius: 0.05000000074505806
-          Shape: Arrow
-          Topic: /prometheus/control/ref_pose_rviz
-          Unreliable: false
-          Value: true
-        - Alpha: 1
           Buffer Length: 30
           Class: rviz/Path
-          Color: 255; 255; 0
+          Color: 0; 255; 255
           Enabled: true
           Head Diameter: 0.30000001192092896
           Head Length: 0.20000000298023224
@@ -160,6 +147,22 @@ Visualization Manager:
           Topic: /prometheus/drone_trajectory
           Unreliable: false
           Value: true
+        - Alpha: 1
+          Axes Length: 0.20000000298023224
+          Axes Radius: 0.019999999552965164
+          Class: rviz/Pose
+          Color: 255; 0; 255
+          Enabled: true
+          Head Length: 0.30000001192092896
+          Head Radius: 0.10000000149011612
+          Name: Reference_Pose
+          Queue Size: 10
+          Shaft Length: 0.5
+          Shaft Radius: 0.05000000074505806
+          Shape: Arrow
+          Topic: /prometheus/control/ref_pose_rviz
+          Unreliable: false
+          Value: true
       Enabled: true
       Name: 无人机状态
     - Class: rviz/Group
@@ -167,14 +170,14 @@ Visualization Manager:
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 2.3399999141693115
+            Max Value: 2.8399999141693115
             Min Value: 0.03999999910593033
             Value: true
           Axis: Z
           Channel Name: intensity
           Class: rviz/PointCloud2
           Color: 255; 170; 0
-          Color Transformer: FlatColor
+          Color Transformer: AxisColor
           Decay Time: 0
           Enabled: true
           Invert Rainbow: false
@@ -185,9 +188,9 @@ Visualization Manager:
           Queue Size: 10
           Selectable: true
           Size (Pixels): 3
-          Size (m): 0.07000000029802322
+          Size (m): 0.10000000149011612
           Style: Flat Squares
-          Topic: /grid_map/occupancy
+          Topic: /grid_map/occupancy_inflate
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
@@ -233,13 +236,13 @@ Visualization Manager:
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
-          Enabled: true
+          Enabled: false
           Marker Topic: /ego_planner_node/global_list
           Name: global_path
           Namespaces:
-            "": true
+            {}
           Queue Size: 100
-          Value: true
+          Value: false
         - Class: rviz/Marker
           Enabled: true
           Marker Topic: /ego_planner_node/optimal_list
@@ -296,7 +299,7 @@ Visualization Manager:
       Name: Image
   Enabled: true
   Global Options:
-    Background Color: 48; 48; 48
+    Background Color: 160; 160; 164
     Default Light: true
     Fixed Frame: world
     Frame Rate: 60

@@ -31,6 +31,7 @@ namespace ego_planner
     data_disp_pub_ = nh.advertise<ego_planner::DataDisp>("/planning/data_display", 100);
   }
 
+  // 初始位置设为当前位置，调用planNextWaypoint规划到msg的路径并执行
   void EGOReplanFSM::waypointCallback(const nav_msgs::PathConstPtr &msg)
   {
     if (msg->poses[0].pose.position.z < -0.1)
@@ -77,6 +78,7 @@ namespace ego_planner
     }
   }
 
+    // 保存无人机当前里程计信息，包括位置、速度和姿态
   void EGOReplanFSM::odometryCallback(const nav_msgs::OdometryConstPtr &msg)
   {
     odom_pos_(0) = msg->pose.pose.position.x;
@@ -122,84 +124,63 @@ namespace ego_planner
 
   void EGOReplanFSM::execFSMCallback(const ros::TimerEvent &e){
 //      printFSMExecState();
-      if (!have_odom_){
-          cout << "[planner] no odom." << endl;
-      }
-      if (!trigger_){
-                  cout << "[planner] wait for goal." << endl;
-      }
 
     switch (exec_state_)
     {
-    case INIT:
-    {
-      if (!have_odom_)
-      {
+        // 如果没程计信息就直接结束，否则切换到WAIT_TARGET
+    case INIT:{
+      if (!have_odom_){
+          cout << "[planner] no odom." << endl;
         return;
       }
-      if (!trigger_)
-      {
+      if (!trigger_){
+          cout << "[planner] wait for goal." << endl;
         return;
       }
       changeFSMExecState(WAIT_TARGET, "FSM");
       break;
     }
 
-    case WAIT_TARGET:
-    {
+            // 如果没有目标位置和启动信号就直接结束，否则切换到GEN_NEW_TRAJ
+    case WAIT_TARGET:{
       if (!have_target_)
         return;
-      else
-      {
+      else{
         changeFSMExecState(GEN_NEW_TRAJ, "FSM");
       }
       break;
     }
 
-    case GEN_NEW_TRAJ:
-    {
-      start_pt_ = odom_pos_;
-      start_vel_ = odom_vel_;
-      start_acc_.setZero();
+    case GEN_NEW_TRAJ:{
+            // Eigen::Vector3d rot_x = odom_orient_.toRotationMatrix().block(0, 0, 3, 1);
+            // start_yaw_(0)         = atan2(rot_x(1), rot_x(0));
+            // start_yaw_(1) = start_yaw_(2) = 0.0;
 
-      // Eigen::Vector3d rot_x = odom_orient_.toRotationMatrix().block(0, 0, 3, 1);
-      // start_yaw_(0)         = atan2(rot_x(1), rot_x(0));
-      // start_yaw_(1) = start_yaw_(2) = 0.0;
+            bool success = planFromGlobalTraj();
+            if (success){
+                // 如果成功，则切换到EXEC_TRAJ, 并flag_escape_emergency_=true
+                changeFSMExecState(EXEC_TRAJ, "FSM");
+                flag_escape_emergency_ = true;
+            }
+            else{
+                changeFSMExecState(GEN_NEW_TRAJ, "FSM");
+            }
+            break;
+        }
 
-      bool flag_random_poly_init;
-      if (timesOfConsecutiveStateCalls().first == 1)
-        flag_random_poly_init = false;
-      else
-        flag_random_poly_init = true;
-
-      bool success = callReboundReplan(true, flag_random_poly_init);
-      if (success)
-      {
-        changeFSMExecState(EXEC_TRAJ, "FSM");
-        flag_escape_emergency_ = true;
-      }
-      else
-      {
-        changeFSMExecState(GEN_NEW_TRAJ, "FSM");
-      }
-      break;
-    }
-
-    case REPLAN_TRAJ:
-    {
-
+    case REPLAN_TRAJ:{
       if (planFromCurrentTraj())
       {
         changeFSMExecState(EXEC_TRAJ, "FSM");
       }else{
+          // 否则切换到REPLAN_TRAJ
         changeFSMExecState(REPLAN_TRAJ, "FSM");
       }
 
       break;
     }
 
-    case EXEC_TRAJ:
-    {
+    case EXEC_TRAJ:{
       /* determine if need to replan */
       LocalTrajData *info = &planner_manager_->local_data_;
       ros::Time time_now = ros::Time::now();
@@ -208,35 +189,40 @@ namespace ego_planner
 
       Eigen::Vector3d pos = info->position_traj_.evaluateDeBoorT(t_cur);
 
+        // 局部规划的终点与全局终点接近
       /* && (end_pt_ - pos).norm() < 0.5 */
+      // TODO: 当前局部轨迹的执行时间已经超过了局部轨迹预计的执行时间
       if (t_cur > info->duration_ - 1e-2){
         have_target_ = false;
 
         changeFSMExecState(WAIT_TARGET, "FSM");
         return;
-      }else if ((end_pt_ - pos).norm() < no_replan_thresh_){
+      }
+      // 当前位置与当前路标点的位置小于no_replan_thresh_
+      else if ((end_pt_ - pos).norm() < no_replan_thresh_){
 //         cout << "[planner] near end" << endl;
 
         return;
-      }else if ((info->start_pos_ - pos).norm() < replan_thresh_){
+      }
+      else if ((info->start_pos_ - pos).norm() < replan_thresh_){
 //         cout << "[planner] near start" << endl;
 
         return;
-      }else{
+      }
+          // 当前位置与全局目标点距离大于no_replan_thresh_并且当前局部轨迹的执行时间超过了replan_thresh_
+      else{
         changeFSMExecState(REPLAN_TRAJ, "FSM");
       }
       break;
     }
 
-    case EMERGENCY_STOP:
-    {
-
-      if (flag_escape_emergency_) // Avoiding repeated calls
-      {
+    case EMERGENCY_STOP:{
+        // Avoiding repeated calls
+      if (flag_escape_emergency_){
+      // 在当前位置停下
         callEmergencyStop(odom_pos_);
       }
-      else
-      {
+      else{
         if (odom_vel_.norm() < 0.1)
           changeFSMExecState(GEN_NEW_TRAJ, "FSM");
       }
@@ -250,30 +236,43 @@ namespace ego_planner
     data_disp_pub_.publish(data_disp_);
   }
 
-  bool EGOReplanFSM::planFromCurrentTraj()
-  {
+    bool EGOReplanFSM::planFromGlobalTraj(){
+        start_pt_ = odom_pos_;
+        start_vel_ = odom_vel_;
+        start_acc_.setZero();
 
+        bool flag_random_poly_init;
+        if (timesOfConsecutiveStateCalls().first == 1)
+            flag_random_poly_init = false;
+        else
+            flag_random_poly_init = true;
+
+        if (callReboundReplan(true, flag_random_poly_init)){
+            return true;
+        }
+        return false;
+    }
+
+  bool EGOReplanFSM::planFromCurrentTraj(){
     LocalTrajData *info = &planner_manager_->local_data_;
     ros::Time time_now = ros::Time::now();
     double t_cur = (time_now - info->start_time_).toSec();
 
     //cout << "info->velocity_traj_=" << info->velocity_traj_.get_control_points() << endl;
 
+    // 设置起始位置速度为当前时刻局部轨迹计算出的位置和速度
     start_pt_ = info->position_traj_.evaluateDeBoorT(t_cur);
     start_vel_ = info->velocity_traj_.evaluateDeBoorT(t_cur);
     start_acc_ = info->acceleration_traj_.evaluateDeBoorT(t_cur);
 
     bool success = callReboundReplan(false, false);
 
-    if (!success)
-    {
+    if (!success){
       success = callReboundReplan(true, false);
       //changeFSMExecState(EXEC_TRAJ, "FSM");
-      if (!success)
-      {
+      if (!success){
         success = callReboundReplan(true, true);
-        if (!success)
-        {
+        if (!success){
           return false;
         }
       }
@@ -282,8 +281,8 @@ namespace ego_planner
     return true;
   }
 
-  void EGOReplanFSM::checkCollisionCallback(const ros::TimerEvent &e)
-  {
+  // 检查轨迹是否会和自己小于安全距离，如果小于安全距离，则切换到REPLAN_TRAJ状态
+  void EGOReplanFSM::checkCollisionCallback(const ros::TimerEvent &e){
     LocalTrajData *info = &planner_manager_->local_data_;
     auto map = planner_manager_->grid_map_;
 
@@ -294,27 +293,28 @@ namespace ego_planner
     constexpr double time_step = 0.01;
     double t_cur = (ros::Time::now() - info->start_time_).toSec();
     double t_2_3 = info->duration_ * 2 / 3;
-    for (double t = t_cur; t < info->duration_; t += time_step)
-    {
+    for (double t = t_cur; t < info->duration_; t += time_step){
       if (t_cur < t_2_3 && t >= t_2_3) // If t_cur < t_2_3, only the first 2/3 partition of the trajectory is considered valid and will get checked.
         break;
 
-      if (map->getInflateOccupancy(info->position_traj_.evaluateDeBoorT(t)))
-      {
+      // t时刻轨迹上为障碍物
+      if (map->getInflateOccupancy(info->position_traj_.evaluateDeBoorT(t))){
         if (planFromCurrentTraj()) // Make a chance
         {
+            // 切换到EXEC_TRAJ 执行新的安全路径
           changeFSMExecState(EXEC_TRAJ, "SAFETY");
           return;
         }
-        else
-        {
+        else{
+            // 将要碰撞的时间与现在的时间小于安全时间emergency_time_
           if (t - t_cur < emergency_time_) // 0.8s of emergency time
           {
+              // 切换到EMERGENCY_STOP 紧急停止
             ROS_WARN("Suddenly discovered obstacles. emergency stop! time=%f", t - t_cur);
             changeFSMExecState(EMERGENCY_STOP, "SAFETY");
           }
-          else
-          {
+          else{
+              // 切换到REPLAN_TRAJ 重新规划轨迹
             //ROS_WARN("current traj in collision, replan.");
             changeFSMExecState(REPLAN_TRAJ, "SAFETY");
           }
@@ -325,10 +325,9 @@ namespace ego_planner
     }
   }
 
-  bool EGOReplanFSM::callReboundReplan(bool flag_use_poly_init, bool flag_randomPolyTraj)
-  {
-
-    getLocalTarget();
+  bool EGOReplanFSM::callReboundReplan(bool flag_use_poly_init, bool flag_randomPolyTraj){
+    // 调用getLocalTarget() 得到局部轨迹的目标点和到达该点时的速度
+      getLocalTarget();
 
     bool plan_success =
         planner_manager_->reboundReplan(start_pt_, start_vel_, start_acc_, local_target_pt_, local_target_vel_, (have_new_target_ || flag_use_poly_init), flag_randomPolyTraj);
@@ -336,9 +335,7 @@ namespace ego_planner
 
     cout << "final_plan_success=" << plan_success << endl;
 
-    if (plan_success)
-    {
-
+    if (plan_success){
       auto info = &planner_manager_->local_data_;
 
       /* publish traj */
@@ -349,8 +346,7 @@ namespace ego_planner
 
       Eigen::MatrixXd pos_pts = info->position_traj_.getControlPoint();
       bspline.pos_pts.reserve(pos_pts.cols());
-      for (int i = 0; i < pos_pts.cols(); ++i)
-      {
+      for (int i = 0; i < pos_pts.cols(); ++i){
         geometry_msgs::Point pt;
         pt.x = pos_pts(0, i);
         pt.y = pos_pts(1, i);
@@ -360,11 +356,11 @@ namespace ego_planner
 
       Eigen::VectorXd knots = info->position_traj_.getKnot();
       bspline.knots.reserve(knots.rows());
-      for (int i = 0; i < knots.rows(); ++i)
-      {
+      for (int i = 0; i < knots.rows(); ++i){
         bspline.knots.push_back(knots(i));
       }
 
+      // 发布新规划出的局部轨迹
       bspline_pub_.publish(bspline);
 
       visualization_->displayOptimalList(info->position_traj_.get_control_points(), 0);
@@ -373,9 +369,8 @@ namespace ego_planner
     return plan_success;
   }
 
-  bool EGOReplanFSM::callEmergencyStop(Eigen::Vector3d stop_pos)
-  {
-
+  // 规划出到stop_pos 的B样条路径
+  bool EGOReplanFSM::callEmergencyStop(Eigen::Vector3d stop_pos){
     planner_manager_->EmergencyStop(stop_pos);
 
     auto info = &planner_manager_->local_data_;
@@ -388,8 +383,7 @@ namespace ego_planner
 
     Eigen::MatrixXd pos_pts = info->position_traj_.getControlPoint();
     bspline.pos_pts.reserve(pos_pts.cols());
-    for (int i = 0; i < pos_pts.cols(); ++i)
-    {
+    for (int i = 0; i < pos_pts.cols(); ++i){
       geometry_msgs::Point pt;
       pt.x = pos_pts(0, i);
       pt.y = pos_pts(1, i);
@@ -399,8 +393,7 @@ namespace ego_planner
 
     Eigen::VectorXd knots = info->position_traj_.getKnot();
     bspline.knots.reserve(knots.rows());
-    for (int i = 0; i < knots.rows(); ++i)
-    {
+    for (int i = 0; i < knots.rows(); ++i){
       bspline.knots.push_back(knots(i));
     }
 
@@ -409,49 +402,52 @@ namespace ego_planner
     return true;
   }
 
-  void EGOReplanFSM::getLocalTarget()
-  {
+  void EGOReplanFSM::getLocalTarget(){
     double t;
 
     double t_step = planning_horizen_ / 20 / planner_manager_->pp_.max_vel_;
     double dist_min = 9999, dist_min_t = 0.0;
-    for (t = planner_manager_->global_data_.last_progress_time_; t < planner_manager_->global_data_.global_duration_; t += t_step)
-    {
+    for (t = planner_manager_->global_data_.last_progress_time_;
+        t < planner_manager_->global_data_.global_duration_;
+        t += t_step){
+        // 在全局轨迹planner_manager_->global_data_ 找到距离当前无人机位置planning_horizen_处的点作为局部轨迹的目标点
       Eigen::Vector3d pos_t = planner_manager_->global_data_.getPosition(t);
       double dist = (pos_t - start_pt_).norm();
 
-      if (t < planner_manager_->global_data_.last_progress_time_ + 1e-5 && dist > planning_horizen_)
-      {
+      if (t < planner_manager_->global_data_.last_progress_time_ + 1e-5 && dist > planning_horizen_){
         // todo
         ROS_ERROR("last_progress_time_ ERROR !!!!!!!!!");
 
         return;
       }
-      if (dist < dist_min)
-      {
+      if (dist < dist_min){
         dist_min = dist;
         dist_min_t = t;
       }
-      if (dist >= planning_horizen_)
-      {
+      if (dist >= planning_horizen_){
         local_target_pt_ = pos_t;
+        // 将全局轨迹上离当前位置最近的点对应的时间赋值给planner_manager_->global_data_.last_progress_time_
         planner_manager_->global_data_.last_progress_time_ = dist_min_t;
         break;
       }
     }
-    if (t > planner_manager_->global_data_.global_duration_) // Last global point
-    {
+
+    // Last global point 局部轨迹的目标点对应的时间大于了全局轨迹的时长
+    if (t > planner_manager_->global_data_.global_duration_){
+        // 将全局终点作为局部轨迹的目标点
       local_target_pt_ = end_pt_;
     }
 
-    if ((end_pt_ - local_target_pt_).norm() < (planner_manager_->pp_.max_vel_ * planner_manager_->pp_.max_vel_) / (2 * planner_manager_->pp_.max_acc_))
-    {
+    // 全局终点到局部轨迹的目标点的距离小于无人机以做大速度和加速度可飞行的距离
+    if ((end_pt_ - local_target_pt_).norm() < (planner_manager_->pp_.max_vel_ * planner_manager_->pp_.max_vel_) / (2 * planner_manager_->pp_.max_acc_)){
       // local_target_vel_ = (end_pt_ - init_pt_).normalized() * planner_manager_->pp_.max_vel_ * (( end_pt_ - local_target_pt_ ).norm() / ((planner_manager_->pp_.max_vel_*planner_manager_->pp_.max_vel_)/(2*planner_manager_->pp_.max_acc_)));
       // cout << "A" << endl;
+      // 局部轨迹的目标点速度设为0
       local_target_vel_ = Eigen::Vector3d::Zero();
     }
-    else
-    {
+
+    else{
+        // 局部轨迹的目标点速度为全局轨迹在该点的速度
       local_target_vel_ = planner_manager_->global_data_.getVelocity(t);
       // cout << "AA" << endl;
     }

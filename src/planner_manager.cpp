@@ -47,8 +47,8 @@ namespace ego_planner
     std::cout << endl
               << "[rebo replan]: -------------------------------------" << count++ << std::endl;
     cout.precision(3);
-    cout << "start: " << start_pt.transpose() << ", " << start_vel.transpose() << "\ngoal:" << local_target_pt.transpose() << ", " << local_target_vel.transpose()
-         << endl;
+    cout << "start: " << start_pt.transpose() << ", " << start_vel.transpose() << endl;
+    cout <<"goal:" << local_target_pt.transpose() << ", " << local_target_vel.transpose() << endl;
 
     if ((start_pt - local_target_pt).norm() < 0.2)
     {

@@ -6,12 +6,13 @@ An ESDF-free Gradient-based Local Planner for Quadrotors, modified from []()
 
 **Video Links:** [YouTube](https://youtu.be/UKoaGW7t7Dk), [bilibili](https://www.bilibili.com/video/BV1VC4y1t7F4/)
 
+
 ## Related Paper
 
 EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou, Zhepei Wang, Chao Xu and Fei Gao (Accepted by RA-L). [arXiv Preprint](https://arxiv.org/abs/2008.08835), [IEEE Xplore](https://ieeexplore.ieee.org/abstract/document/9309347), and [IEEE Spectrum report](https://spectrum.ieee.org/automaton/robotics/robotics-hardware/video-friday-mit-media-lab-tf8-bionic-ankle).
 
 
-# Acknowledgements
+## Acknowledgements
 - The framework of this repository is based on [Fast-Planner](https://github.com/HKUST-Aerial-Robotics/Fast-Planner) by Zhou Boyu who achieves impressive proformance on quadrotor local planning.
 
 - The L-BFGS solver we use is from [LBFGS-Lite](https://github.com/ZJU-FAST-Lab/LBFGS-Lite).
@@ -21,17 +22,22 @@ EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou,
 
 - The hardware architecture is based on an open source implemation from [Teach-Repeat-Replan](https://github.com/HKUST-Aerial-Robotics/Teach-Repeat-Replan).
 
+
 ## Release Note
 
+- v1.2.1: update height of `end_pt_` to height of `final_goal`
 - v1.2.0: support `POS_VEL_ACC` control
 - v1.0.2: replace `prometheus_msgs` with `quadrotor_msgs`
 - v1.0.1: mapping with D435i
 
-## Standard Compilation
+
+## Compilation
 
 ```bash
 catkin_make install --source src/EGO-Planner --build build/ego_planner
 ```
+
+## Launch
 
 ```bash
 roslaunch ego_planner simulation.launch

@@ -21,7 +21,7 @@
         <!-- planning fsm -->
         <!-- time to replan, the less, the higher frequency -->
         <param name="fsm/thresh_replan" value="0.05" type="double"/>
-        <!-- distance to stop replan -->
+        <!-- 目标点与无人机当前位置小于no_replan_thresh_就不需要再规划到这个点的轨迹 -->
         <param name="fsm/thresh_no_replan" value="0.2" type="double"/>
         <!--always set to 1.5 times grater than sensing horizen-->
         <param name="fsm/planning_horizon" value="$(arg planning_horizon)" type="double"/>

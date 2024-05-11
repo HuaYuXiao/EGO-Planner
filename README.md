@@ -1,6 +1,6 @@
 # EGO-Planner 
 
-An ESDF-free Gradient-based Local Planner for Quadrotors, modified from []()
+An ESDF-free Gradient-based Local Planner for Quadrotors, modified from [ego_planner](https://github.com/amov-lab/Prometheus/tree/v1.1/Modules/ego_planner/ego-planner-swarm/src/planner/plan_manage)
 
 **EGO-Planner** is a lightweight gradient-based local planner without ESDF construction, which significantly reduces computation time compared to some state-of-the-art methods <!--(EWOK and Fast-Planner)-->. The total planning time is only **around 1ms** and don't need to compute ESDF.
 
@@ -25,6 +25,7 @@ EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou,
 
 ## Release Note
 
+- v1.3.0: support `planFromGlobalTraj`
 - v1.2.1: update height of `end_pt_` to height of `final_goal`
 - v1.2.0: support `POS_VEL_ACC` control
 - v1.0.2: replace `prometheus_msgs` with `quadrotor_msgs`

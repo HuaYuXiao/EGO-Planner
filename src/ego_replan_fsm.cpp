@@ -152,38 +152,28 @@ namespace ego_planner
     }
 
     case GEN_NEW_TRAJ:{
-      start_pt_ = odom_pos_;
-      start_vel_ = odom_vel_;
-      start_acc_.setZero();
+            // Eigen::Vector3d rot_x = odom_orient_.toRotationMatrix().block(0, 0, 3, 1);
+            // start_yaw_(0)         = atan2(rot_x(1), rot_x(0));
+            // start_yaw_(1) = start_yaw_(2) = 0.0;
 
-      // Eigen::Vector3d rot_x = odom_orient_.toRotationMatrix().block(0, 0, 3, 1);
-      // start_yaw_(0)         = atan2(rot_x(1), rot_x(0));
-      // start_yaw_(1) = start_yaw_(2) = 0.0;
-
-      bool flag_random_poly_init;
-      if (timesOfConsecutiveStateCalls().first == 1)
-        flag_random_poly_init = false;
-      else
-        flag_random_poly_init = true;
-
-      bool success = callReboundReplan(true, flag_random_poly_init);
-      // 如果成功，则切换到EXEC_TRAJ并flag_escape_emergency_=true
-      if (success){
-        changeFSMExecState(EXEC_TRAJ, "FSM");
-        flag_escape_emergency_ = true;
-      }
-      //  否则切换到REPLAN_TRAJ
-      else{
-        changeFSMExecState(GEN_NEW_TRAJ, "FSM");
-      }
-      break;
-    }
+            bool success = planFromGlobalTraj();
+            if (success){
+                // 如果成功，则切换到EXEC_TRAJ, 并flag_escape_emergency_=true
+                changeFSMExecState(EXEC_TRAJ, "FSM");
+                flag_escape_emergency_ = true;
+            }
+            else{
+                changeFSMExecState(GEN_NEW_TRAJ, "FSM");
+            }
+            break;
+        }
 
     case REPLAN_TRAJ:{
       if (planFromCurrentTraj())
       {
         changeFSMExecState(EXEC_TRAJ, "FSM");
       }else{
+          // 否则切换到REPLAN_TRAJ
         changeFSMExecState(REPLAN_TRAJ, "FSM");
       }
 
@@ -201,7 +191,7 @@ namespace ego_planner
 
         // 局部规划的终点与全局终点接近
       /* && (end_pt_ - pos).norm() < 0.5 */
-      // 当前局部轨迹的执行时间已经超过了局部轨迹预计的执行时间
+      // TODO: 当前局部轨迹的执行时间已经超过了局部轨迹预计的执行时间
       if (t_cur > info->duration_ - 1e-2){
         have_target_ = false;
 
@@ -227,9 +217,9 @@ namespace ego_planner
     }
 
     case EMERGENCY_STOP:{
-        // 在当前位置停下
-      if (flag_escape_emergency_) // Avoiding repeated calls
-      {
+        // Avoiding repeated calls
+      if (flag_escape_emergency_){
+      // 在当前位置停下
         callEmergencyStop(odom_pos_);
       }
       else{
@@ -245,6 +235,23 @@ namespace ego_planner
     data_disp_.header.stamp = ros::Time::now();
     data_disp_pub_.publish(data_disp_);
   }
+
+    bool EGOReplanFSM::planFromGlobalTraj(){
+        start_pt_ = odom_pos_;
+        start_vel_ = odom_vel_;
+        start_acc_.setZero();
+
+        bool flag_random_poly_init;
+        if (timesOfConsecutiveStateCalls().first == 1)
+            flag_random_poly_init = false;
+        else
+            flag_random_poly_init = true;
+
+        if (callReboundReplan(true, flag_random_poly_init)){
+            return true;
+        }
+        return false;
+    }
 
   bool EGOReplanFSM::planFromCurrentTraj(){
     LocalTrajData *info = &planner_manager_->local_data_;

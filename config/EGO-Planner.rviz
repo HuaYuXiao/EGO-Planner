@@ -124,7 +124,7 @@ Visualization Manager:
           Unreliable: false
           Value: true
         - Alpha: 1
-          Buffer Length: 30
+          Buffer Length: 100
           Class: rviz/Path
           Color: 0; 255; 255
           Enabled: true
@@ -170,7 +170,7 @@ Visualization Manager:
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 2.8399999141693115
+            Max Value: 2.740000009536743
             Min Value: 0.03999999910593033
             Value: true
           Axis: Z

@@ -11,6 +11,12 @@ Video on [bilibili](https://www.bilibili.com/video/BV1dt421c7Em/)
 
 EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou, Zhepei Wang, Chao Xu and Fei Gao (Accepted by RA-L). [arXiv Preprint](https://arxiv.org/abs/2008.08835), [IEEE Xplore](https://ieeexplore.ieee.org/abstract/document/9309347), and [IEEE Spectrum report](https://spectrum.ieee.org/automaton/robotics/robotics-hardware/video-friday-mit-media-lab-tf8-bionic-ankle).
 
+![HitCount](https://img.shields.io/endpoint?url=https%3A%2F%2Fhits.dwyl.com%2FHuaYuXiao%2FEGO-Planner.json%3Fcolor%3Dpink)
+![Static Badge](https://img.shields.io/badge/ROS-noetic-22314E?logo=ros)
+![Static Badge](https://img.shields.io/badge/OpenCV-4.2.0-5C3EE8?logo=opencv)
+![Static Badge](https://img.shields.io/badge/C%2B%2B-14-00599C?logo=cplusplus)
+![Static Badge](https://img.shields.io/badge/Ubuntu-20.04.6-E95420?logo=ubuntu)
+
 
 ## Acknowledgements
 - The framework of this repository is based on [Fast-Planner](https://github.com/HKUST-Aerial-Robotics/Fast-Planner) by Zhou Boyu who achieves impressive proformance on quadrotor local planning.
@@ -30,7 +36,7 @@ EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors, Xin Zhou,
 - v1.0.1: mapping with D435i
 
 
-## Compilation
+## Installation
 
 ```bash
 catkin_make install --source src/EGO-Planner --build build/ego_planner

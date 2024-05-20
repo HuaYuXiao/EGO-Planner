@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(ego_planner)
 
 set(CMAKE_BUILD_TYPE "Release")
-ADD_COMPILE_OPTIONS(-std=c++14 )
+ADD_COMPILE_OPTIONS(-std=c++14)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g")
-
 set(CMAKE_PREFIX_PATH /opt/ros/noetic;/usr/local;$ENV{HOME}/Prometheus/devel/;$ENV{HOME}/planner_ws/devel;$ENV{HOME}/mapping_ws/devel;$ENV{HOME}/mapping_ws/devel_isolated;$ENV{HOME}/tool_ws/devel)
 message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
@@ -28,7 +27,7 @@ add_message_files(
   FILES
   Bspline.msg
   DataDisp.msg
-  )
+)
   
 # Generate added messages and services with any dependencies listed here
 generate_messages(
@@ -46,9 +45,9 @@ catkin_package(
 )
 
 include_directories(
-  include
   SYSTEM
-  ${catkin_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include
+  ${catkin_INCLUDE_DIRS}
+        ${PROJECT_SOURCE_DIR}/include
   ${EIGEN3_INCLUDE_DIR}
   ${PCL_INCLUDE_DIRS}
 )
@@ -58,9 +57,7 @@ add_executable(ego_planner_node
   src/ego_replan_fsm.cpp
   src/planner_manager.cpp
   )
-target_link_libraries(ego_planner_node 
-  ${catkin_LIBRARIES}
-  )
+target_link_libraries(ego_planner_node ${catkin_LIBRARIES})
 add_dependencies(ego_planner_node ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 add_executable(traj_server src/traj_server.cpp)

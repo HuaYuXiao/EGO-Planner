@@ -2,5 +2,5 @@
 .catkin_workspace
 build
 devel
-cmake-build-debug
+cmake-build-*
 .idea

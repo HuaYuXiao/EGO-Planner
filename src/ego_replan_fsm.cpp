@@ -21,14 +21,20 @@ namespace ego_planner
     planner_manager_->initPlanModules(nh, visualization_);
 
     /* callback */
-    exec_timer_ = nh.createTimer(ros::Duration(0.01), &EGOReplanFSM::execFSMCallback, this);
-    safety_timer_ = nh.createTimer(ros::Duration(0.05), &EGOReplanFSM::checkCollisionCallback, this);
+    exec_timer_ = nh.createTimer
+            (ros::Duration(0.01), &EGOReplanFSM::execFSMCallback, this);
+    safety_timer_ = nh.createTimer
+            (ros::Duration(0.05), &EGOReplanFSM::checkCollisionCallback, this);
 
-    odom_sub_ = nh.subscribe("/prometheus/drone_odom", 1, &EGOReplanFSM::odometryCallback, this);
-      waypoint_sub_ = nh.subscribe("/waypoint_generator/waypoints", 1, &EGOReplanFSM::waypointCallback, this);
+    odom_sub_ = nh.subscribe
+            ("/mavros/local_position/odom", 1, &EGOReplanFSM::odometryCallback, this);
+      waypoint_sub_ = nh.subscribe
+              ("/waypoint_generator/waypoints", 1, &EGOReplanFSM::waypointCallback, this);
 
-    bspline_pub_ = nh.advertise<ego_planner::Bspline>("/prometheus/planning/bspline", 10);
-    data_disp_pub_ = nh.advertise<ego_planner::DataDisp>("/planning/data_display", 100);
+    bspline_pub_ = nh.advertise<ego_planner::Bspline>
+            ("/planning/bspline", 10);
+    data_disp_pub_ = nh.advertise<ego_planner::DataDisp>
+            ("/planning/data_display", 100);
   }
 
   // 初始位置设为当前位置，调用planNextWaypoint规划到msg的路径并执行

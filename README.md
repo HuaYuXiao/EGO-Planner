@@ -66,7 +66,7 @@ sudo apt-get install libarmadillo-dev
 
 From github,
 ```
-git clone https://github.com/ZJU-FAST-Lab/ego-planner.git
+git clone https://github.com/HuaYuXiao/EGO-Planner.git
 ```
 
 Or from gitee,
@@ -99,6 +99,8 @@ Then you can follow the gif below to control the drone.
 <p align = "center">
 <img src="pictures/sim_demo.gif" width = "640" height = "438" border="5" />
 </p>
+
+![rosgraph](doc/rosgraph.png)
 
 ## 3. Using an IDE
 We recommend using [vscode](https://code.visualstudio.com/), the project file has been included in the code you have cloned, which is the _.vscode_ folder.

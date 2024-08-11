@@ -1,25 +1,17 @@
 <launch>
-    <!-- parameter for planner -->
-    <arg name="model" default="p450_3Dlidar_D435i"/>
-    <arg name="planner" default="EGO-Planner"/>
-
     <!-- world -->
-    <include file="$(find prometheus_gazebo)/launch/Eason_indoor.launch"/>
+    <include file="$(find easondrone_gazebo)/launch/cafe_indoor.launch"/>
 
     <!-- 1号无人机 -->
-    <include file="$(find prometheus_gazebo)/launch/sitl_$(arg model).launch"/>
+    <include file="$(find easondrone_gazebo)/launch/sitl_p450.launch"/>
 
-    <include file="$(find uav_control)/launch/uav_control_indoor.launch"/>
+    <include file="$(find easondrone_gazebo)/launch/transform.launch"/>
 
-    <!-- STATION -->
-    <include file="$(find prometheus_station)/launch/prometheus_station.launch"/>
-
-    <!-- 启动octomap建图 -->
-    <include file="$(find ego_planner)/launch/mapping.launch"/>
+    <include file="$(find px4ctrl)/launch/px4ctrl.launch"/>
 
     <!-- 启动导航 -->
-    <include file="$(find ego_planner)/launch/$(arg planner).launch"/>
+    <include file="$(find ego_planner)/launch/EGO-Planner.launch"/>
 
     <!-- 启动rviz -->
-    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find ego_planner)/config/$(arg planner).rviz"/>
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find ego_planner)/config/default.rviz"/>
 </launch>

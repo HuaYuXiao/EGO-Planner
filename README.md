@@ -64,20 +64,14 @@ sudo apt-get install libarmadillo-dev
 
 **Step 2**. Clone the code from github or gitee. This two repositories synchronize automaticly.
 
-From github,
 ```
 git clone https://github.com/HuaYuXiao/EGO-Planner.git
-```
-
-Or from gitee,
-```
-git clone https://gitee.com/iszhouxin/ego-planner.git
 ```
 
 **Step 3**. Compile,
 ```shell
 cd ~/EasonDrone
-catkin_make install --source Planning/EGO-Planner --build Planning/EGO-Planner/build
+catkin_make --source Planning/EGO-Planner --build Planning/EGO-Planner/build
 ```
 
 **Step 4**. Run.

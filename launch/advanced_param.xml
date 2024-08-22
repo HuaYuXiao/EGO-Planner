@@ -38,13 +38,13 @@
         <param name="fsm/planning_horizen_time" value="3" type="double"/>
         <param name="fsm/emergency_time_" value="1.0" type="double"/>
 
-        <param name="grid_map/resolution"      value="0.1" />
+        <param name="grid_map/resolution"      value="0.05" />
         <param name="grid_map/map_size_x"   value="$(arg map_size_x_)" />
         <param name="grid_map/map_size_y"   value="$(arg map_size_y_)" />
         <param name="grid_map/map_size_z"   value="$(arg map_size_z_)" />
-        <param name="grid_map/local_update_range_x"  value="5.5" />
-        <param name="grid_map/local_update_range_y"  value="5.5" />
-        <param name="grid_map/local_update_range_z"  value="4.5" />
+        <param name="grid_map/local_update_range_x"  value="5" />
+        <param name="grid_map/local_update_range_y"  value="5" />
+        <param name="grid_map/local_update_range_z"  value="5" />
         <param name="grid_map/obstacles_inflation"     value="0.4" />
         <param name="grid_map/local_map_margin" value="30"/>
         <param name="grid_map/ground_height"        value="-0.01"/>
@@ -78,7 +78,7 @@
         <param name="grid_map/show_occ_time"  value="false"/>
         <!-- 1: pose; 2: odom -->
         <param name="grid_map/pose_type"     value="2"/>
-        <param name="grid_map/frame_id"      value="map"/>
+        <param name="grid_map/frame_id"      value="world"/>
 
         <!-- planner manager -->
         <param name="manager/max_vel" value="$(arg max_vel)" type="double"/>

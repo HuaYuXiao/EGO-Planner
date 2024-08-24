@@ -1,13 +1,11 @@
 <launch>
-    <!-- world -->
-    <include file="$(find easondrone_gazebo)/launch/Eason_obstacle.launch"/>
-
-    <!-- 1号无人机 -->
-    <include file="$(find easondrone_gazebo)/launch/sitl_p450.launch"/>
+    <include file="$(find easondrone_gazebo)/launch/mavros_posix_sitl.launch"/>
 
     <include file="$(find easondrone_gazebo)/launch/transform.launch"/>
 
     <include file="$(find px4ctrl)/launch/px4ctrl.launch"/>
+
+    <node name="pub_pcl_world" pkg="easondrone_mapping" type="pub_pcl_world.py"/>
 
     <!-- 启动导航 -->
     <include file="$(find ego_planner)/launch/simple_run.launch"/>

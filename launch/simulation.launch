@@ -1,15 +1,19 @@
 <launch>
     <include file="$(find easondrone_gazebo)/launch/mavros_posix_sitl.launch"/>
 
+    <node name="filter_pc" type="filter_pc" pkg="easondrone_mapping"/>
+
     <include file="$(find easondrone_gazebo)/launch/transform.launch"/>
 
     <include file="$(find px4ctrl)/launch/px4ctrl.launch"/>
 
-    <node name="pub_pcl_world" pkg="easondrone_mapping" type="pub_pcl_world.py"/>
+    <node pkg="easondrone_mapping" type="merge_pc2" name="merge_pc2">
+        <rosparam command="load" file="$(find ego_planner)/config/merge_pc2.yaml" />
+    </node>
 
-    <!-- 启动导航 -->
     <include file="$(find ego_planner)/launch/simple_run.launch"/>
 
-    <!-- 启动rviz -->
+    <node type="odom_visualization" pkg="odom_visualization" name="odom_visualization"/>
+
     <node type="rviz" name="rviz" pkg="rviz" args="-d $(find ego_planner)/config/default.rviz"/>
 </launch>

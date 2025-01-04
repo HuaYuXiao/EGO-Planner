@@ -64,6 +64,8 @@ Visualization Manager:
           Value: true
         base_link_frd:
           Value: false
+        laser_livox:
+          Value: true
         map:
           Value: true
         map_ned:
@@ -94,6 +96,8 @@ Visualization Manager:
               VLP16_link:
                 {}
               base_link_frd:
+                {}
+              laser_livox:
                 {}
               monocular_link:
                 {}
@@ -164,6 +168,14 @@ Visualization Manager:
           Topic: /easondrone/drone_trajectory
           Unreliable: false
           Value: true
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /odom_visualization/robot
+          Name: Marker
+          Namespaces:
+            mesh: true
+          Queue Size: 100
+          Value: true
       Enabled: true
       Name: 无人机状态
     - Class: rviz/Group
@@ -171,8 +183,8 @@ Visualization Manager:
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 2.440000057220459
-            Min Value: 0.03999999910593033
+            Max Value: 4.815000057220459
+            Min Value: 0.5149999856948853
             Value: true
           Axis: Z
           Channel Name: intensity
